@@ -7,7 +7,7 @@ https://miro.com/app/board/o9J_klSqCSY=/?share_link_id=16133753693
 
 #START 
 =================
-#TAGS: #header#,#ARP Types#
+#TAGS: #header#,#ARP Types#, #Traceroute# #Firewalking#, 
 =================
 
 
@@ -17,9 +17,9 @@ DAY 1
 A 'float' must be used to get to the private net. This 'float' is not inside the network. Once inside the network, you won't be using the float anymore. 
 Float info - ssh student@10.50.30.41 -X (connect through remmina)
 
-
-Network Access
-==============
+==================
+= Network Access =
+==================
 
 Protocol Data Unit:
 
@@ -165,9 +165,342 @@ MITM with ARP:
 Explain VTP with its vulnerabilities:
 
 
+VLAN Trunking Protocol
+  Dynamically add/remove/modify/modify VLANs
+
+VTP 
+  Cisco proprietary
+  Modes:
+    Server
+    Client
+    Tansparent
+    off mode
+
+VTP Vulnerability
+  Can cause switches to dump all VLAN information
+  Cause a DoS as switch doens't support configured VLANs
+
+Dynamic Trunking Protocl (DTP):
+  used to dynamically create trunk links
+  Cisco Proprietary
+  Is turned on by default
+  can send crafted messages to form a VLAN trunk link.
+  Recommended to: 
+    Disable DTP negotiations
+      Manually assign as Access or Trunk
+
+  CDP, FCP and LLDP
+    Cisco Discvory Protocol
+    Foundry Discovery Protocol
+    Link Layer Discovery Protocol
+
+      These: 
+        Leak Valuable information, in clear text. 
+        Enable by default.
+        Disable this: globally, per interface. 
+      These may be required for VOIP.
+
+Explain Spanning Tree Protocol: 
+  Spanning Tree Protocl (STP)
+    It figures out the best route to a destination and then only used that one. 
+    It asks every switch for their root switch and designated ports so it knows what not to use. 
+    R is a port it uses to get to the root.
+    D is a designated port that must be open. 
+
+    1. Elect root Bridge
+    2. ID the root ports on non-root bridge
+    3. ID the designated port for each segment. 
+
+  STP Types
+    802.1D STP
+    802.1w - Rapid Spanning Tree Protocol (RSTP)
+    Rapid Per VLAN Spanning Tree (Rapid PVST)
+
+  Spanning Tree attack
+    Crafted bridge protocl data units. (BDPUs)
+
+  Port Security
+    Shutdown (default) - shut down a port, sends an SNMP trap notification.
+    Protect - will drop any frames from unkown source addresses.
+    Restrict - it will keep the port up, but this option will log it.
+
+  Layer 2 attack mitigation techniques:
+    Shutdown unused ports
+    Enable port security
+    IP source guard
+    Manually assign STP Root
+    BPDU Guard
+    DHCP Snooping
+  
+  other techniques:
+    802.1x - a client based authentication
+    Dynamic ARP inspection (DAI)
+    Static CAM entries (not recommended)
+    Stat ARP entries
+    Disable DTP negotiations
+    Manually assign Access/Trunk Ports
+    
+
+====================
+= Network Layer FG =
+====================
+
+IP versions
+  IPv4 (ARPANET 1982)
+    Classful subnetting
+    classless subnetting
+    NAT
+  Ipv6
+  
+Describe Classful IPv4 Addressing and Subnetting
+  Class A (0 - 127)
+  Class B 
+  etc.
+
+Subnetting
+
+
+Analyzing IPv4 Packet Header
+  Version  Internet-Header-Length  Differentiated-Service-Code-Point  Explicit-Congestion-Notification  Total-Length  Identification  Flags  Fragment-Offset  
+
+  
+  Time-to-Live  Protocol  Header-Checksum  Src.Address  Dest.Address   Options
+  
+
+IPv4 Address Types
+  Unicast
+  ...
+
+IPv4 Address Scopes
+  Public
+  Private (RFC1918)
+  Loopback (127.0.0.0/8)
+  Link-Local (APIPA) - automatically assigns an IP address to a newly registered device. 
+  Multicast (class D)
+
+IPv4 Fragmentation
+  Breaks up packets from a higher MTU to a lower MTU.
+
+Fragmentation Process
+  Teardrop Attack - takes advantage of the fragmentation process. 
+
+IPv6 Fragmentation
+  does not support fragmentation within it's header.
+  Routers do not fragmetn IPv6 packets
+  Source adjusts MTU to avoid fragmentation
+  Source can use IPv6 fragmentation extension header. 
+
+Fragmentation Vulnerability
+
+OS Fingerprinting with TTL
+  Vendors have chosen different values for TTL which can provide insight to which OS family a generated packet is from. 
+
+IPv4 Auto Configuration 
+  APIPA
+    169.254.0.0/16
+    RFC 3927
+  DHCP
+    DORA Process
+    RFC 1531
+
+IPv4 Auto Config Vulnerability
+  Rogue DHCP Server
+  Evil Twin
+  DHCP Starvation
+
+Analyze ICMPv4 Protocol and Header Structure
+  ICMP is more of a management protocol.
+  Type 8 - echo request
+  Type 0 - echo reply
+  Type 3 - Destination Unreachable
+  etc.
+
+ICMPv4 OS Fingerprinting
+  Linux   
+    Default size is 64-bytes
+    payload message: 
+    ...
+
+  Windows
+    Default size is 48-bytes
+    payload message:
+
+
+  ICMPv4 Traceroute
+    #Traceroute#
+    #Firewalking#
+traceroute 8.8.8.8
+sudo traceroute 8.8.8.8 -T
+sudo traceroute 8.8.8.8 -T -p 443
+sudo traceroute 8.8.8.8 -U -p 123 
+sudo traceroute 8.8.8.8 -I
+
+  SMURF Attack
+    Cracks a custom ICMP message.
+    Takes advantage of broadcasting. 
+
+  IPunreachable messages to map a network
+
+  ICMP Cover Channel
+
+
+Explain IPv6 Addressing
+  128 bits long
+  Same fields
+    Fields no longer here: optons, padding, IHL, identification, Flags, Fragment Offset, Header Checksum. 
+    New field: Flow label.
+
+IPv6 Representation
+    2001:0db8:85a3:0000:0000:8a2e:0370:7334,
+
+Identify IPv6 Address Types:
+
+Ipv6 Address Scopes
+
+Ipv6 Zero Configuration (link-local)
+  
+
+Vulnerabilities;
+  SLAAC MITM
+
+ICMP also supports ICMPv6
+
+Explain Neighbor Discovery Protocol (NDP)
+ Router Solicitation 
+ ...
+
+Discuss Routing:
+  How does a router know where to send a packet when it arrives? It looks at it's routing table. 
+  The routing table is just a list of networks to which the packet can be fwded to. 
+  
+Think back to JCAC. The Enterprise Level Networking Mod provided a lot of examples of routing tables. These same tables are where we'll get all of our routing information from for a given network. 
+
+Administrator Distance:
+  Connected 0
+  Static 1
+  EIGRP 5
+  External BGP 20
+  Internal EIGRP 90
+  IGPR 100
+  OSPF 110
+  IS-IS 115
+  etc.
+
+Lookup Process:
+
+Metrics: 
+  RIP - Hop
+  EIGPR - Bandwidth, Delay, Load, Reliability
+  OSPF - Cost
+  BGP - Policy
+
+Dynamic Routing Protocols
+  Classful                          vs.      Classless
+  -Doesn't carry
+  subnet mask info within 
+  the routing updates.
+  -Exchange routing updates at
+  Regular Time Intervals.
+  -Use periodic updates
+  -Do not use Hello messages
+  -Consumes more network
+    bandwidth.
+  -Does not support CIDR and VLSM
+
+Classless is newer. 
+
+  Routed vs Routing Protocols
+  
+IGP and EGP 
+ Interior Gateway Protocol - only functions within its AS (a number designated to your network).
+ Exterior Gateway Protocol - used to exchange routing information between autonomous systems. 
+
+BGP
+ Border Gateway Protocol - the only currently viable EGP and is the official routing protocol used by the internet. 
+
+AS
+ Autonomous System - Collection of connected internet protocol routing prefixes unther the control of one or more network operators on behalf of a single administrative entity or domain, that presents a common and clearly defined routing  policy to the internet. 
+ Usually these ASs are regionally based, and these regions are assigned by IANA. 
+
+Autonomous systems are 16-bit or 32-bit: 
+AS109   CISCO-EU-109 Cisco Systems Global ASN
+AS193   FORD-ASN - Lockheed Martin Western Development Labs
+AS721   DoD Network Information Center Network
+AS3598  MICROSOFT-CORP-AS - Microsoft Corporation
+AS15169 GOOGLE - Google Inc.
+
+Distance Vector Routing Protocols: 
+
+  
+Link State Routing Protocol:
+  Builds its own tree, which is then broadcasted out and all devices wil then use the broadcasted route. 
+
+Distance Vector vs Link State:
+
+
+Routing Protocol Vulnerabilities:
+  DDOS
+  PMA - Packet Mistreating Attack
+  RTP - Routing Table Poisoning
+  HAR - 
+  PA
+
+BGP
+  again, this is the road-map of the internet.
+  Routes traffic between AS numbers.
+  Advertises IP CIDR Address blocks. 
+  Establishes peer relationships. 
+
+BGP Operation
+  How it chooses the best path:
+    Advertises a more specific route. 
+    Offers a shorter route
+
+BGP Hijacking
+  Illegitimate advertising of Addresses
+  BGP Propogates false informaiton
+  Purpose:
+    Stealing prefixes
+    monitoring traffic
+    intercept internet traffic
+    'black hoking' traffic
+    perform MitM
+
+BGP Hijacking Defense
+  IP prefix filtering
+  BGP Hijacking detection
+    tracking the change in TTL of incoming packets
+    increased roung tip time (RTT) which increases latency.
+    Monitoring misdirected traffic
+  BGPSec
 
 
 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+  
