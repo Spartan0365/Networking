@@ -474,6 +474,22 @@ BGP Hijacking Defense
     Monitoring misdirected traffic
   BGPSec
 
+Dynamic vs. Static Routing
+  Dynamic is often preferred because it is easy. Static won't send updates (burn bandwidth) and it's data path is pre-determined. However, it's also time-consuming, prone to error, must have its problems resolved by an admin, and does      not scale well for large network growth. 
+
+  Dynamic Routing is easy to configure and maintain, no intervention needed for network outages and scales well for large networks. However, it consumes a lot of badnwidth and resources, updates can be intercepted and data-path is NOT      predetermined. 
+
+First Hop Redundancy Protocol
+  HSRP - provides default gateway redundancy using one active and one stadby router.
+  VRRP - Open standard alternative to Cisco's HSRP, providing the same functionality.
+  GLBP - Supports arbitrary load balancing in addition to redundancy across gateways; cisco proprietary. 
+
+FHRP Attack
+  Intercept the FHRP message exchange
+  Inject manipulated messages
+  MitM by becoming the active forwarder.
+
+
 
 
 
