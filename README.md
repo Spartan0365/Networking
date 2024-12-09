@@ -7,7 +7,7 @@ https://miro.com/app/board/o9J_klSqCSY=/?share_link_id=16133753693
 
 #START 
 =================
-#TAGS: #header#,#ARP Types#, #Traceroute# #Firewalking#, 
+#TAGS: #header#,#ARP Types#, #Traceroute# #Firewalking#, #SSH#
 =================
 
 
@@ -489,20 +489,149 @@ FHRP Attack
   Inject manipulated messages
   MitM by becoming the active forwarder.
 
+============================
+= Transport to Application =
+============================
+
+Transport Layer Protocols
+  Connection-oriented
+    TCP - Segments
+    Unicast Traffic
+  Connetion-less
+    UDP - Datagrams
+    Broadcast, Multicast, or unicast traffic.
+
+Port Ranges
+  0 - 1023 Well-known (system)
+  1024 - 49151 Registered (User)
+  49152 - 65535 Dynamic (Private)
+
+TCP Reliability
+  1 Connection Establishment
+    3-way handshake
+  2 Data Txfer
+    Extablished phase
+  3 Connection Termination
+    4-way termination
+
+TCP Headers
+
+TCP States
+
+TCP Options
 
 
+UDP Headers
+  Cares about the source, destination and how big the packet is. 
+  (Fire and Forget)
+
+Virtual Private Networks (VPN)
+  Connects through a network that is not accessible to everyone else. This "private" connection makes it look like it is a direct connection when it is in fact NOT.   
+  Types:
+    Remote Access (Client-to-Client)
+    Site-to-Site (Router-to-Router)
+
+L2TP
+  Layer 2 Tunneling protocol. Everything is clear-text visible with this. 
+
+PPTP
+  Some encryption, but mostly obsolete.
+    
+IPSec 
+  Most popular suite of protocols used today because it DOES provide encryption.
+  Transport mode: only encrypts the payload   
+  Tunnel mode: used for end to end communication between two hosts or devices.
+  
+OpenVPN
+  
+Proxies 
+  A vital intermediary that stands between a user's device, either a computer or smartphone, and the vast expanse of the internet. It acts as a sophisticated gateway. 
+  They are instrumental guardians of privacy, gatekeepers for access control and enchangers of overall inernet efficiency. 
+
+SOCKS 4/5 (TCP 1080)
+  Socket Secure, is a protocol that facilitates communication between clients and servers through a proxy server. 
+
+SOCKS 4
+  No authentication
+  only IPv4
+  No UDP Support
+  No Proxy binding. CLient's IP is not relayed to destination. 
+SOCKS 5
+  Better than SOCKS 4
+
+Network Basic Input Output System Protocol
+  TCP 139 and UDP 138
+
+RPC (any port)
+  Allows a program to execute a request on a local/remote computer
+  Hides network complexities
+
+API   
+  A Framework of rules and protocols for software components to interact
+  Methods, parameters, and data formats for requests and responses.
+    REST and SOAP
+
+Presentation Layer
+  Translation and transformation
+
+Telnet (TCP 23)
+  Remote login
+  Authentication
+  Clear Text
+  Credentials susceptible to interception
+
+SSH (TCP 22)
+  Messages provided:
+    Client/Server Authentication
+    Asymmetric or PKI for key exchange
+    Symmetric for session
+    User authentication
+    Data Stream Channeling
+
+Components of SSH Architecture
+  Client/Server/Session
+    Keys
+      User Key
+      Host Key 
+      Session Key
+
+SSH Implementation Concerns
+  Using password authentication only
+  Key rotation
+  key management
+  implementation specification (libssh, sshtrangerthings)
+
+SSH Usage
+#SSH#
+$ ssh {user}@{ip}
+$ ssh student@172.16.82.106
 
 
+-X = This will enable X11 graphics to be forwarded from the server to the client. This will allow you to open graphical applications such as pcmanfm, gimp, eog, eom, firefox, terminator, and more. ssh student@172.16.82.106 -X
+    This option will allow you to view images.  
+-v = Enables verbose mode, which provides detailed debugging information about the SSH connection process. This can be helpful for diagnosing connection issues or troubleshooting SSH configuration problems. ssh student@172.16.82.106 -v
 
+-f = Requests SSH to go to the background just before command execution. This is useful when running SSH commands as part of scripts or automation tasks. This is not to be confused with the & option which is used to background most applications. ssh student@172.16.82.106 -f
 
+-i {identity file} = Selects a file from which the identity (private key) for RSA or DSA authentication is read. The default is ~/.ssh/identity for protocol version 1, and ~/.ssh/id_rsa and ~/.ssh/id_dsa for protocol version 2. ssh student@172.16.82.106 -i idfile.pub
 
+-F {config file} = Specifies an alternative per-user configuration file. If a configuration file is given on the command line, the system-wide configuration file (/etc/ssh/ssh_config) will be ignored. The default for the per-user configuration file is ~/.ssh/config. ssh student@172.16.82.106 -F my.config
 
+-N = Requests that no command be executed on the remote server after establishing the SSH connection. This can be useful when setting up port forwarding or establishing a tunnel without running a command on the remote server. ssh student@172.16.82.106 -NT
 
+-T = Disables pseudo-terminal allocation, preventing the allocation of a terminal on the remote server. This can be useful when executing commands that do not require interaction or terminal emulation. ssh student@172.16.82.106 -NT
 
+-C = Enables compression of data during transmission over the SSH connection, reducing bandwidth usage, especially over slow or high-latency connections. ssh student@172.16.82.106 -C
 
+-J user@host = Specifies a jump host to connect through when establishing the SSH connection. This simplifies the process of connecting to a remote host that is not directly accessible from the local machine. ssh -J student@10.10.0.40, student@172.16.1.15, student@172.16.40.10 student@172.16.82.106
 
+-L [bind_address:]port:host:hostport = Sets up local port forwarding, allowing connections to a local port to be forwarded over the SSH tunnel to a specified host and port on the remote server. This can be useful for accessing services running on a remote server through a secure tunnel. ssh student@172.16.82.106 -L 1234:192.168.1.10:22
 
+-R [bind_address:]port:host:hostport = Sets up remote port forwarding, allowing connections to a specified port on the remote server to be forwarded over the SSH tunnel to a host and port on the local machine or another remote server. This can be useful for exposing services running on the local machine to the remote server or other remote machines. ssh student@10.10.0.40 -L 1234:172.16.40.10:22
 
+-D {port} = Specifies a local "dynamic" port forwarding port. This creates a SOCKS proxy on the specified port, allowing other applications to tunnel their traffic through the SSH connection securely. ssh student@172.16.1.15 -D 9050
+
+Expect a warning when initially connecting through SSH.
 
 
 
