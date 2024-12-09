@@ -7,7 +7,7 @@ https://miro.com/app/board/o9J_klSqCSY=/?share_link_id=16133753693
 
 #START 
 =================
-#TAGS: #header#,#ARP Types#, #Traceroute# #Firewalking#, #SSH#
+#TAGS: #header#,#ARP Types#, #Traceroute# #Firewalking#, #SSH#, #SSH Files# 
 =================
 
 
@@ -632,11 +632,171 @@ $ ssh student@172.16.82.106
 -D {port} = Specifies a local "dynamic" port forwarding port. This creates a SOCKS proxy on the specified port, allowing other applications to tunnel their traffic through the SSH connection securely. ssh student@172.16.1.15 -D 9050
 
 Expect a warning when initially connecting through SSH.
+  Warns that the Host Key Changed (you connected to somebody else this session than you did during your last session).
+  This could be a warning if you noticed you're getting this message but you hadn't connected to any different users since the last time you SSHd.
+
+#SSH Files# , SSH Configuration Files
+  cat .ssh/known_hosts
+      /etc/ssh/ssh_config
+      /etc/ssh/sshd_config
+
+View/Change SSh Port
+  To view current configured SSH Port 
+    cat /etc/ssh/sshd_config | grep Port
+  To edit file to change the SSH Port
+    sudo nano /etc/ssh/sshd_config
+
+  SSH-KeyGen
+    ssh-keygen -t rsa -b 4096 -C "Student"
+
+  SH-Copy-ID
+    ssh-copy-id student@172.16.82.106
+
+HTTP(S) (TCP 80/443)
+  User Request Methods
+    Get/HEAD/POST/PUT
+  Server Response Codes 
+  100,200,300,400,500
+  Vulnerabilities
+    Flooding
+    Amplification - makes the attack appear as if it is originating from multiple sources.
+    Low and slow - functions by opening connections to a targeted web-server and then keeping those connections open as long as it can. 
+    Drive-by Downloads - 
+    BeEF Framework
+
+DNS (TCP/UDP 53)
+  DNS Query / Response
+    Resolves Names to IP Addresses
+    Queries and responses use UDP
+    DNS response larger than 512 bytes
+      DNS Zone transfer
+
+  DNS Records
+  A - Ipv4
+  AAAA - IPv6
+  MX - Mail Server Record
+  TXT - Human-readable text
+  NS - Name Server Record
+  SOa - Start of Authority
+
+  Architecture
+    Root Domain
+    Tol-Level Domain : .com .org .net .gov
+    Second-Level Domain : .att .google .lana .wikipedia
+    Third-Level Domain : www drive mail 
+
+FTP (TCP 20/21)
+  RFC 959
+  Port 21 open for Control
+  Port 20 only open during data transfer
+  Authentication or anonymous
+  Clear text
+  Modes: 
+    Active (default)
+    Passive
+
+  FTP Active
+    Client initiates the connection with a server on port 21 from the client's ephemeral high port. 
+    3-Way Handshake 
+  FTP Active Issues
+    NAT and Firewall Traversal issues
+    Complications with tunneling
+  
+  FTP Passive
+    Passive FTP sidesteps the issue of Active mode by reversing the conversation. Client initiates both the command and the data connections. 
+
+TFTP (UDP 69)
+  Clear text
+  Reliability provided at Application layer
+  Used by routers and switches to transfer IOS and config files
+
+SMTP (TCP 25)
+  Used to send email
+  No encryption
+  SMTP over...
+
+POP (TCP 110)
+
+IMAP (TCP 143)
+
+DHCP (UDP 67/68)
+  How you get an IP address if you don't have one.
+
+DHCPv4
+  DORA
+
+DHCPv6
+  SLAAC
+
+NTP (UDP 123)
+   Stratum 0 - authoritative time source
+     Up to stratum 15
+     Vulnerable to crafted packet injection
+     Can break time sensitive applications.
+
+AAA Protocols
+  Authentication, Authorization, Accounting
+  For Third party authentication
+
+    TACACS (TCP 49) Simple/Extended
+      It's a network security protocol used for centralized authentication, authorization and accounting services in network devices such as routers, switches and firewall.
+
+  RADIUS (UDP 1645/1646 and 1812/1813)
+
+  Analyze Diamaeter Protocol (TCP 3868)
+
+  SNMP (UDP 161/162)
+    7 Message Types:
+      Get Request
+      Set Request
+      Get Next
+      Get Bulk
+      Response
+      Trap
+      Inform
+    Vulnerabilities: 
+      Weak community string
+      Lack of encryption
+      Information disclosure
+
+RTP (UDP any above 1023)
+
+RDP (TCP 3389)
+  Developed by Microsoft (open standard)
+  No server software needed
+
+KERBEROS (UDP 88)
+  Issues out tickets. 
+  Secure network authentication protocol.
+  Clients obtain tickets to access services.
+  mutual athentication.
+  used by active directory. 
+
+LDAP (TCP 389 and 636)
+  Client/server model
+  Higherarchical
+  Directory Schema
+  Unsecure and secure versions
 
 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    
 
 
 
