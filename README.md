@@ -1078,7 +1078,20 @@ Search for TCP Urgent Pointer having a value.
 Filtering for #TCP Flags Examples#
     "tcp[13] = 20 || tcp[13] = 17" (this will filter for all packets with the ACK/RST or ACK/FIN flags set).
     sudo tcpdump -n "tcp[13] = 20 || tcp[13] = 17" -r /home/activity_resources/pcaps/BPFCheck.pcap | wc -l
-
+    "tcp[13]=2" (this will filer for initial packets from a client trying to initiate a connection)
+    "tcp[13]=18" (this will filter for response packets from a server listening on an open TCP port)
+    "tcp[13]=4" (this will filter for packets from a server with closed tcp ports. The reset (4) bit indicates the port was not open.)
+    "tcp[2:2]<1024||udp[2:2]<1024" (this will filter for all tcp and udp packets sent to the well known ports)
+    "tcp[0:2]=80||tcp[2:2]=80" (this will filter for all http traffic)
+    "tcp[0:2]=23||tcp[2:2]=23" (this will filter for all telnet traffic)
+    "ether[12:2]=0x0806" (this will filter for all ARP traffic--remember, ARP is filtered for through the ethernet header)"
+    "ip[6] & 128 != 0" or "ip[6] & 128 = 128" (this will filter to capture if the "evil bit" is set, the IP header is used here)
+    "ip[9]=0x10" (This will filter for the chaos protocol, which can be found filtered through the ipv4 (ip) filter).
+    "ip[1]>>2=37" (this will filter for packets with the DSCP field of 37. The '>>2' is necessary as it indicates the 2 bit shift to the right, which is required for the DSCP field).
+    "(ip[9]=0x01 || ip[9]=0x11) && ip[8]=1" (This will will look for potential traceroutes betweeen linux and windows systems (and others), AND a TTL of 1 (which is the beginning of each             traceroute, otherwise it would give us much more results for each recorded (incremeneted) Time to live value)) 
+    "tcp[13]&32=0&&tcp[18:2]!=0" (this will filter for all packets where the urg value is not set (32) and the urg pointer HAS a value (!=0))
+    "ip[16:4]=0x0a0a0a0a && tcp[13]=0" (this will first filter for the IP address 10.10.10.10 (in hex, it is 0x0a0a0a0a) and where all tcp flags are null (basically, no TCP flags), which is         0, and the reason why it is tcp[13]=0"
+    "ether[12:4] & 0xffff0fff = 0x81000001 && ether[16:4] & 0xffff0fff = 0x8100000a" (this will filter for #VLAN Hopping#. The 0xffff0fff isn't too important to understand, it essentially           identifies the area you're searching through, though. the 0x81000001 indicates the position of the VLAN (VLAN '1'), and that's why there's a 1 at the end of it. Likewise for the               0x8100000a, which is VLAN 10 (represented by the 'a' in hex). This essentially filters for hopping between these two VLANs).
     
 Write Shark filters for BPFs. #Wireshark BPFs#
     Capture filters - used to specify which packets should be saved to disk while capturing.
