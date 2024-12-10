@@ -7,7 +7,7 @@ https://miro.com/app/board/o9J_klSqCSY=/?share_link_id=16133753693
 
 #START 
 =================
-#TAGS: #header#,#ARP Types#, #Traceroute# #Firewalking#, #SSH#, #SSH Files# 
+#TAGS: #header#,#ARP Types#, #Traceroute# #Firewalking#, #SSH#, #SSH Files#, #tcpdump#,  #Wireshark BPFs#, #P0F Signature Database#, 
 =================
 
 
@@ -788,6 +788,9 @@ LDAP (TCP 389 and 636)
 
 
 
+==================================
+=========     Day 2    ===========
+==================================
 
 
 
@@ -795,21 +798,293 @@ LDAP (TCP 389 and 636)
 
 
 
+Sniffing Tools and Methods
+  Practical Uses
+    Network troubleshooting
+    diagnosing improper routing or switching
+    identifying port/protocol misconfigurations
+    monitoring networking consumption
+    intercepting usernames and passwords
+    eavesdrop on network communications.
+  Disadvantages:
+    Requires elevated permissions
+    Can only capture what the NIC can see
+    Cannot capture local traffic
+    can consume massive amounts of system resources
+    lost packets on busy networks
+  Packets can be captured by:
+    Hardware packet sniffers
+    Software Packet sniffers
 
+Describe Socket Types
+  User Space Sockets
+    Stream socket - TCP
+    Datagram socket - UDP
+  Kernel Space Sockets
+    RAW Sockets
 
+Capture library 
+  Requires root for:
+    promiscious mode (listens on all NICs)
+    All captured packets are created as RAW sockets
 
+Types of Sniffing
+  Active
+  Passive
+
+Popular Software Packet Capture Programs
+  tcpdump, tshark, NetworkMiner, SolarWinds, EtterCap
+  Wireshark, p0f, NetMiner, BetterCap
+
+  other:
+  Kismet, McAfee, Nmap, Snort, L0phCrack, ngrep, Scapy
+  Suricata
+
+Interface Naming
+  Traditional: 
+    eth0, eth1
+  Consistent:
+    eno1, ens3
+
+Explain TCPDUMP Primitives #tcpdump#
+  User Friendly capture expressions:
+    src or dst
+    host or net
+    tcp or udp
+
+basic tcpdump options:
+  -A = print payload in ASCII
+  -D = list interfaces
+  -i = specify capture interfaces
+  -e = print data-link headers
+  -X or XX = print payload in HEX and ASCII
+  -w = write to pcap
+  -r = read from pcap
+  -v, vv, or vvv = verbosity
+  -n = no inverse lookups
+
+TCPdump primitve qualifier:
+  type- the 'kind of thing' that the id name or nubmer refers to:
+    host, net, port, or portrange.
+  dir - transfer direction to and/or from.
+    src or dst
+  proto- restricts the match to a particular protocol
+    ether, arp, ip, ip6, icmp, tcp, or udp. 
+
+Logical operators:
+  Primitives can be combined using: 
+    'and' (&&)
+    'or' ( || )
+    'not' (!)
+Relational Operators
+  < or <=
+  > or >=
+ = or == or !=
+
+tcpdump primitive examples:
+  simple
+  extended
+
+examples: sudo tcpdump -i eth0 arp
+          or
+          sudo tcpdump -i eth0 icmp
+          sudo tcpdump -VVn-i eth0 icmp
+          sudo tcpdump -vvn -i eth 0 icmp host 10.10.0.40
+          sudo tcpdump -vvn -i eth 0 icmp dst host 10.10.0.40 or sudo tcpdump -vvn -i eth 0 icmp src host 10.10.0.40
+          sudo tcpdump -vvn -i eth 0 icmp src host 10.10.0.0/24
+          sudo tcpdump -vvn -i eth 0 icmp port 22
+          sudo tcpdump host 192.168.1.1 and \( 1.1.1.1 or 10.1.1.2\) or sudo tcpdump host 192.168.1.1 and '1.1.1.1 or 10.1.1.2'
+
+if having problems with tcpdump, you can enter debug mode. 
+  ex. tcpdump "ether[12:2] = 0x800" -d 
+
+  -d = Dump the compiled packet-matching code in human readable form. 
+  lhd - loads half-word value in the accumulator from offset 12 in the ethernet header.
+  jeq - check if the value is "0x800" and if this is true "jump true" to line if it is false "jump false" to line 3.
 
   
+Construct a BPF #BPF# this is great for filtering out as much as possible and can make your job up to x20 quicker.
+  tcpdump requests a RAW socket creation
+  Filters are set using the SO_Attach_Filter
+  So_Attach_Filter allows us to attach a Berkley Packet Filter to the socket to capture incoming packets. 
+
+BPF examples:
+  tcpdump -i eth0 'ether[12:2] = 0x0806'
+  tcmpdump -e eth1 'ip[9] = 0x06'
+  tcmpdump -i eth0 'tcp[0:2] =53 || tcp [2:2] = 53'
+  tcpdump 'ether[12:2] 0x0800 && (tcp[2:2] != 22 && tcp[2:2] != 23)'
+  [ :2] read 2 bytes
+  [ :4] reads 4 bytes
+  [ : ] reads 1 byte by default
+
+  Bitwise masking examples
+    tcpdump 'ether 'ether[12:2] = 0x0806'
+    tcpdump ip[1] & 252 = 32' (filters for DSCP information, all DSCP value is between 32 and 4. (a 4 is a 1 for DSCP))
+    tcpdump 'ip[6] & 224 = 32' 
+    tcpdump 'tcp[13] & 0x11 = 0x11'
+    tcpdump 'tcp[12] & 0xf0 > 0x50' (filters for byte 12, and the for bits turned on within the offset value only ( 0xf0) that are greater than 0x50. 
+  
+Filter logic most exclusive:
+  tcp[13] & 0x11 = 0x11
+Least exclusive:
+  tcp[13] & 0x11 > 0
+  tcp[13] & 0x11 !=0
+
+BPFS at the Data-Link Layer
+  Searching for the destination broadcast MAC address.
+    'ether[0:4] = 0xffffffff && ether[4:2] = 0xffff'
+    'ether[0:2] = 0xffff && ether[2:2]= 0xffff && ether[4:2] = 0xffff'
+
+  Searching for the source MAC address.
+    'ether[6:4] = 0xfa163ef0 && ether[10:2] = 0xcafc'
+    'ether[6:2] = 0xfa16 && ether[8:2] = 0x3ef0 && ether[10:2] = 0xcafc'
+
+BPFS at the Data-Link Layer
+  'ether[0] & 0x01 = 0x00'
+  'ether[0] & 0x01 = 0x01'
+  'ether[6] & 0x01 = 0x00'
+  'ether[6] & 0x01 = 0x01'
+
+Search for IPv4, ARP, VLAN Tag, and IPv6 (respectively)
+  ether[12:2] = 0x0800
+  ether[12:2] = 0x0806
+  ether[12:2] = 0x8100
+  ether[12:2] = 0x86dd
+
+Searching for 802.1Q VLAN 100
+  'ether[12:2] = 0x8100 && ether[14:2] & 0x0fff = 0x0064'
+  'ether[12:4] & 0xffff0fff = 0x81000064'
+  
+Search for double VLAN tag
+  'ether[12:2] = 0x8100 && ether[16:2] = 0x8100'
+
+BFPS at the Network Layer
+  Search for IHL greater than 5
+    'ip[0] & 0x0f > 0x05'
+    'ip[0] & 15 > 5'
+
+Search for ipv4 DSCP value of 16
+  'ip[1] & 0xfc = 0x40'
+  'ip[1] & 252 = 64'
+  'ip[1] >> 2 = 16' (>> means drop two bytes from the right, meaning the start point moves further to the left (by 2))
+
+Search for traffic class in ipv6 having a value
+  'ip6[0:2] & 0x0ff0 != 0'
+
+Search only for the RES flag set. DF and MF must be off. 
+  'ip[6] & 0xE0 = 0x80'
+  'ip[6] & 224 = 128'
+
+Search for RES bit set. The other 2 flags are ignored so they can be on or off. 
+  'ip[6] & 0x80 = 0x80'
+  'ip[6] & 128 = 128'
+
+Search for ONLY the DF flag set. RES and MF must be off.
+  'ip[6] & 0xE0 = 0x40'
+  'ip[6] & 224 = 64'
+
+Search for DF bit set. The other 2 flags are ignored so they can be on or off.
+  'ip[6] & 0x40 = 0x40'
+  'ip[6] & 64 = 64'
+
+Search for ONLY the MF flag set. RES and DF must be off.
+  'ip[6] & 0xe0 = 0x20'
+  'ip[6] & 224 = 32'
+
+Search for MF bit set. The other 2 flags are ignored so they can be on or off.
+  'ip[6] & 0x20 = 0x20'
+  'ip[6] & 32 = 32'
+
+Search for offset field having any value greater than zero (0).
+  'ip[6:2] & 0x1fff > 0'
+  'ip[6:2] & 8191 > 0'
+
+Search for MF set or offset field having any value greater than zero (0).
+  'ip[6] & 0x20 = 0x20 || ip[6:2] & 0x1fff > 0'
+  'ip[6] & 32 = 32 || ip[6:2] & 8191 > 0'
+
+ Search for TTL in ipv4(6) packet.
+  'ip[8] = 128'
+  'ip[8] < 128'
+  'ip[8] >= 128'
+  'ip6[7] = 128'
+  'ip6[7] < 128'
+  'ip6[7] >= 128'
+
+Search for ICMPv4(6), TCP, or UDP encapsulated within an ipv4(6) packet.
+  'ip[9] = 0x01'
+  'ip[9] = 0x06'
+  'ip[9] = 0x11'
+  'ip6[6] = 0x3A'
+  'ip6[6] = 0x06'
+  'ip6[6] = 0x11'
+example syntax:
+  "ip[8]<65||ip6[7]<65" ( this will search for ip and ipv6 packets with a ttl of 64 and less)
+  sudo tcpdump -n "ip[8] < 65 or ip6[7] < 65" -r /home/activity_resources/pcaps/BPFCheck.pcap | wc -l
+  "ip[8]<=64 or ip6[7]<=64"
+  
+Search for ipv4 source or destination address of 10.1.1.1.
+  'ip[12:4] = 0x0a010101'
+  'ip[16:4] = 0x0a010101'
+
+Search for ipv6 source or destination address starting with FE80.
+  'ip6[8:2] = 0xfe80'
+  'ip6[24:2] = 0xfe80'
+
+Search for TCP source port 3389.
+  'tcp[0:2] = 3389'
+
+Search for TCP destination port 3389.
+  'tcp[2:2] = 3389'
+
+Search for TCP source or destination port 3389.
+  'tcp[0:2] = 0x0d3d || tcp[2:2] = 0x0d3d'
+
+Search for TCP with options.
+  'tcp[12] & 0xF0 > 0x50'
+  'tcp[12] & 240 > 80'
+
+Search for TCP Reserve field with a value.
+  'tcp[12] & 0x0F != 0'
+  'tcp[12] & 15 > 0'
+
+Search for TCP Flags set to ACK+SYN. No other flags can be set.
+  'tcp[13] = 0x12'
+
+Search for TCP Flags set to ACK+SYN. The other flags are ignored.
+  'tcp[13] & 0x12 = 0x12'
+
+Search for TCP Flags ACK and SYN (both or 1 must be on).
+  'tcp[13] & 0x12 != 0'
+  'tcp[13] & 0x12 > 0'
+
+Search for TCP Urgent Pointer having a value.
+  'tcp[18:2] != 0'
+  'tcp[18:2] > 0'
+
+Write Shark filters for BPFs. #Wireshark BPFs#
+    Capture filters - used to specify which packets should be saved to disk while capturing.
+    Display filters - allow you to change the view of what packets are displayed of those that are captured.
+
+use filter: (example)
+  host 172.16.82.106 && (tcp0:2]==80 or tcp 2:2]=80)
+
+Wireshark can use most primitives and/or BPFs.
+
+Useful Wireshark menu:
+  Protocol Hierarchy
+
+To decrypt traffic in Wireshark
+  Menu → Edit → Preference → Protocols → SSL
+
+
+P0F Signature Database #P0F Signature Database#, used for passive fingerprinting. Basically looking for handshakes/exchanges. (this is not part of wireshark or tcpdump)
+  Learn as much as you can about P0f because it will be on the final exam, could be 5 questions. 
+  less /etc/p0f/p0f.fp
+  p0f -h
+  p0f -i eth0
+  p0f -r capture.pcap
+  p0f -r wget.pcap -o /var/log/p0f.log
+  cat /var/log/p0f.log | grep {expression}
     
-
-
-
-
-
-
-
-
- 
-
-
-  
+    
