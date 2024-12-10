@@ -7,7 +7,9 @@ https://miro.com/app/board/o9J_klSqCSY=/?share_link_id=16133753693
 
 #START 
 =================
-#TAGS: #header#,#ARP Types#, #Traceroute# #Firewalking#, #SSH#, #SSH Files#, #tcpdump#,  #Wireshark BPFs#, #P0F Signature Database#, 
+#TAGS: #header#,#ARP Types#, #Traceroute# #Firewalking#, #SSH#, #SSH Files#, #tcpdump#, #TTL# in ipv4(6), #TCP DF (Don't Fragment) bit#,#TCP source port#, #Filter for UDP and TCP Packets#,
+#TCP Flags Examples#, #Specific IP ID#
+#Wireshark BPFs#, #P0F Signature Database#, 
 =================
 
 
@@ -983,10 +985,13 @@ Search for ONLY the DF flag set. RES and MF must be off.
   'ip[6] & 0xE0 = 0x40'
   'ip[6] & 224 = 64'
 
-Search for DF bit set. The other 2 flags are ignored so they can be on or off.
+Search for #TCP DF (Don't Fragment) bit# set. The other 2 flags are ignored so they can be on or off.
   'ip[6] & 0x40 = 0x40'
   'ip[6] & 64 = 64'
-
+  example:
+    'ip[6] & 64 != 0' (this will filter for all IPv4 packets with at least the Dont Fragment bit set)
+    sudo tcpdump -n "ip[6] & 64 != 0" -r /home/activity_resources/pcaps/BPFCheck.pcap | wc -l
+    
 Search for ONLY the MF flag set. RES and DF must be off.
   'ip[6] & 0xe0 = 0x20'
   'ip[6] & 224 = 32'
@@ -1003,26 +1008,30 @@ Search for MF set or offset field having any value greater than zero (0).
   'ip[6] & 0x20 = 0x20 || ip[6:2] & 0x1fff > 0'
   'ip[6] & 32 = 32 || ip[6:2] & 8191 > 0'
 
- Search for TTL in ipv4(6) packet.
+ Search for #TTL# in ipv4(6) packet.
   'ip[8] = 128'
   'ip[8] < 128'
   'ip[8] >= 128'
   'ip6[7] = 128'
   'ip6[7] < 128'
   'ip6[7] >= 128'
+  example syntax:
+  "ip[8]<65||ip6[7]<65" ( this will search for ip and ipv6 packets with a ttl of 64 and less)
+  sudo tcpdump -n "ip[8] < 65 or ip6[7] < 65" -r /home/activity_resources/pcaps/BPFCheck.pcap | wc -l
+  "ip[8]<=64 or ip6[7]<=64"
 
-Search for ICMPv4(6), TCP, or UDP encapsulated within an ipv4(6) packet.
+Search for ICMPv4(6), TCP, or UDP encapsulated within an ipv4(6) packet. #Filter for UDP and TCP Packets#
   'ip[9] = 0x01'
   'ip[9] = 0x06'
   'ip[9] = 0x11'
   'ip6[6] = 0x3A'
   'ip6[6] = 0x06'
   'ip6[6] = 0x11'
-example syntax:
-  "ip[8]<65||ip6[7]<65" ( this will search for ip and ipv6 packets with a ttl of 64 and less)
-  sudo tcpdump -n "ip[8] < 65 or ip6[7] < 65" -r /home/activity_resources/pcaps/BPFCheck.pcap | wc -l
-  "ip[8]<=64 or ip6[7]<=64"
-  
+   example:
+      'ip[9] = 0x11||ip6[6] = 0x11' (will filter for all UDP packets utilizing ipv4 and ipv6 headers)
+      sudo tcpdump -n "ip[9] = 0x11||ip6[6] = 0x11" -r /home/activity_resources/pcaps/BPFCheck.pcap | wc -l
+
+      
 Search for ipv4 source or destination address of 10.1.1.1.
   'ip[12:4] = 0x0a010101'
   'ip[16:4] = 0x0a010101'
@@ -1031,9 +1040,13 @@ Search for ipv6 source or destination address starting with FE80.
   'ip6[8:2] = 0xfe80'
   'ip6[24:2] = 0xfe80'
 
-Search for TCP source port 3389.
+Search for #TCP source port# 3389.
   'tcp[0:2] = 3389'
+    example:
+      'tcp[0:2] > 1024 || udp[0:2] > 1024' (this will filter for all ports greater than 1024)
+      sudo tcpdump -n "tcp[0:2] > 1024 || udp[0:2] > 1024" -r /home/activity_resources/pcaps/BPFCheck.pcap | wc -l
 
+      
 Search for TCP destination port 3389.
   'tcp[2:2] = 3389'
 
@@ -1062,12 +1075,25 @@ Search for TCP Urgent Pointer having a value.
   'tcp[18:2] != 0'
   'tcp[18:2] > 0'
 
+Filtering for #TCP Flags Examples#
+    "tcp[13] = 20 || tcp[13] = 17" (this will filter for all packets with the ACK/RST or ACK/FIN flags set).
+    sudo tcpdump -n "tcp[13] = 20 || tcp[13] = 17" -r /home/activity_resources/pcaps/BPFCheck.pcap | wc -l
+
+    
 Write Shark filters for BPFs. #Wireshark BPFs#
     Capture filters - used to specify which packets should be saved to disk while capturing.
     Display filters - allow you to change the view of what packets are displayed of those that are captured.
 
 use filter: (example)
   host 172.16.82.106 && (tcp0:2]==80 or tcp 2:2]=80)
+
+Filter for #Specific IP ID#
+    'ip[4:2] == 213' (will filter for the specific ip id)
+    sudo tcpdump -n " ip[4:2] == 213" -r /home/activity_resources/pcaps/BPFCheck.pcap | wc -l
+
+Filter for #VLAN TAG#
+    "ether[12:2]==0x8100" (filters for specific VLAN TAG)
+    sudo tcpdump -n "ether[12:2]==0x8100" -r /home/activity_resources/pcaps/BPFCheck.pcap | wc -l
 
 Wireshark can use most primitives and/or BPFs.
 
@@ -1076,6 +1102,11 @@ Useful Wireshark menu:
 
 To decrypt traffic in Wireshark
   Menu → Edit → Preference → Protocols → SSL
+
+How to filter for for ports across TCP and UDP
+  Example:
+    "tcp[2:2]=53 || tcp[0:2]=53 || udp[2:2]=53 || udp[0:2]=53" (this one will filter for DNS for both UDP and TCP).
+    sudo tcpdump -n "tcp[2:2]=53 || tcp[0:2]=53 || udp[2:2]=53 || udp[0:2]=53" -r /home/activity_resources/pcaps/BPFCheck.pcap | wc -l
 
 
 P0F Signature Database #P0F Signature Database#, used for passive fingerprinting. Basically looking for handshakes/exchanges. (this is not part of wireshark or tcpdump)
