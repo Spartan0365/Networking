@@ -19,8 +19,8 @@ https://miro.com/app/board/o9J_klSqCSY=/?share_link_id=16133753693
 #Hex Encoding and Decoding#, #Python Hex Encoding#, #Base64 Encoding and Decoding#, #Python Base64 Encoding#, #Stream Socket Sender Demo#
 #Getting a Message to a remote team Utilizing a specific host (BLUE_DMZ_HOST-1) using STREAM SOCKET#
 #Getting a Message to a remote team utilizing the specified host (INTERNET_HOST) using DATAGRAM SOCKET#
+#Modify ipraw.py #, #modify tcpraw.py#
 
-#RAW IPV$ and TCP SOCKET DEMO#
 =================
 
 
@@ -1407,6 +1407,7 @@ ip_dstadd = socket.inet_aton(dst_ip)  # inet_aton(string) will convert an IP add
 
 
 #Getting a Message to a remote team Utilizing a specific host (BLUE_DMZ_HOST-1) using STREAM SOCKET#
+
 coded information: 867-5309 Jenny
 port number = 5309
 BLUE-DMZ-HOST-1: 172.16.1.15
@@ -1428,6 +1429,7 @@ Message: Jenny
     s.close()
 
 #Getting a Message to a remote team utilizing the specified host (INTERNET_HOST) using DATAGRAM SOCKET#
+
   Port = 10000
   Message = Disturbed
   INTERNET_HOST = PROVIDED FLOAT IP (10.50.30.41)
