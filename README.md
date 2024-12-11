@@ -15,6 +15,9 @@ https://miro.com/app/board/o9J_klSqCSY=/?share_link_id=16133753693
 #Wireshark BPFs#, #P0F Signature Database#, 
 
 #Python#, #Python String#, #Python Integer#, #Python Built In Functions# , #Python Built-In Methods#, #Python How Imports Work#, #Network Programming with Python3#, #The socket.socket Function#
+
+#Hex Encoding and Decoding#, #Python Hex Encoding#, #Base64 Encoding and Decoding#, #Python Base64 Encoding#
+
 =================
 
 
@@ -1275,8 +1278,91 @@ Stream Socket Sender Demo
     print(data.decode('utf-8'))
     s.close()
 
-chmod +x new.py  (what I named the file)
+chmod +x new.py  (what I named the file), this makes it executable. 
+  ss -ntlp - this will open up all listening sockets
+  ss -udp
+  nc -lvp 1111
+
+open up a terminator console and type ls, 
+then ./new.py
+
+
+Datagram Socket Sender Demo
+#!/usr/bin/python3
+import socket
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, 0)
+ip_addr = '127.0.0.1'
+port = 2222
+message = b"Message"
+s.sendto(message, (ip_addr, port))
+data, addr = s.recvfrom(1024)
+print(data.decode())
+
+chmod +x udp.py 
+
+Raw IPV4 Sockets
+  RAW Socket scripts must include the IP header and the next headers.
+  Requires guidance from the "Request for Comments" (RFC) to follow header structure properly.
+    RFCs contain technical and organizational documents about the Internet, including specifications and policy documents.
+  See RFC 791, Section 3 - Specification for details on how to construct an IPv4 header.
+
+Raw Socket Use Case
+  Testing specific defense mechanisms - such as triggering and IDS for an effect, or filtering
+  Avoiding defense mechanisms
+  Obfuscating data during transfer
+  Manually crafting a packet with the chosen data in header fields
+
+Encoding and Decoding
+  Encoding
+    The process of taking bits and converting them using a specified cipher.
+  Decoding
+    Reverse of the conversion process used by the specified cipher for encoding.
+  Common encoding schemes
+    UTF-8, Base64, Hex
+
+Encoding vs Encryption
+  Encoding - converts data into a different format
+  Encryption - scrambles data to make it unreadable without a secret key
+
+#Hex Encoding and Decoding#
+  Encode text to Hex:
+    echo "Message" | xxd
+    or
+    xxd file.txt file-encoded.txt
+  Decode file from Hex:
+    xxd -r file-encoded.txt file-decoded.txt
+
+#Python Hex Encoding#:
+  import binascii
+
+  message = b'Message'
+  hidden_msg = binascii.hexlify(message)
+
+#Base64 Encoding and Decoding#: (We'll likely see the answers encoded during class, expect different padding at the end of it, which looks like one or two equal signs '==')
+  Encode text to base64:
+    echo "Message" | base64
+    or 
+    base64 file.txt > file-encoded.txt  (new file into old file)
+  Decode file from Base64:
+    base64 -d file-encoded.txt > file-decoded.txt (old file into new file)
   
+#Python Base64 Encoding#
+  import base64
+  message = b'Message'
+  hidden_msg = base64.b64encode(message)
+
+
+Raw IPV4 and TCP Socket Demos
+
+
+
+
+
+
+
+
+
+
 
 
 
