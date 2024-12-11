@@ -16,8 +16,9 @@ https://miro.com/app/board/o9J_klSqCSY=/?share_link_id=16133753693
 
 #Python#, #Python String#, #Python Integer#, #Python Built In Functions# , #Python Built-In Methods#, #Python How Imports Work#, #Network Programming with Python3#, #The socket.socket Function#
 
-#Hex Encoding and Decoding#, #Python Hex Encoding#, #Base64 Encoding and Decoding#, #Python Base64 Encoding#
+#Hex Encoding and Decoding#, #Python Hex Encoding#, #Base64 Encoding and Decoding#, #Python Base64 Encoding#, #Stream Socket Sender Demo#
 
+#RAW IPV$ and TCP SOCKET DEMO#
 =================
 
 
@@ -1244,7 +1245,7 @@ Understanding Python Terminology #Python#
 
 Python3 Libraries and References
   Socket
-  Struct
+  Struct (example struct.pack is used to combine various pieces of your raw socket packet into network order.)
   Sys
   Errors
   Exceptions
@@ -1265,7 +1266,7 @@ Python3 Libraries and References
   proto: 0*, IPPROTO_TCP, IPPROTO_UDP, IPPROTO_IP, IPPROTO_ICMP, IPPROTO_RAW
 
 
-Stream Socket Sender Demo
+#Stream Socket Sender Demo#
     #!/usr/bin/python3
     import socket
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
@@ -1287,7 +1288,7 @@ open up a terminator console and type ls,
 then ./new.py
 
 
-Datagram Socket Sender Demo
+#Datagram Socket Sender Demo#
 #!/usr/bin/python3
 import socket
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, 0)
@@ -1352,14 +1353,95 @@ Encoding vs Encryption
   hidden_msg = base64.b64encode(message)
 
 
-Raw IPV4 and TCP Socket Demos
+Raw IPV4 and TCP Socket Demos #RAW IPV$ and TCP SOCKET DEMO#
+#!/usr/bin/python3
+#For building the socket
+import socket
+
+#For system level commands
+import sys
+
+#For establishing the packet structure (Used later on), this will allow direct access to the methods and functions in the struct module
+from struct import *
+
+#Create a raw socket.
+try:
+    s = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_RAW)
+except socket.error as msg:
+    print(msg)
+    sys.exit()
+
+packet = ''
+packet = ''
+
+src_ip = "127.0.0.1"
+dst_ip = "127.0.0.1"
+
+# Lets add the IPv4 header information
+ip_ver_ihl = 69  # This is putting the decimal conversion of 0x45 for Version and Internet Header Length
+ip_tos = 0           # This combines the DSCP and ECN feilds
+ip_len = 0           # The kernel will fill in the actually length of the packet
+ip_id = 12345        # This sets the IP Identification for the packet
+ip_frag = 0          # This sets fragmentation to off
+ip_ttl = 64          # This determines the TTL of the packet when leaving the machine
+ip_proto = 16        # This sets the IP protocol to 16 (Chaos). If this was 6 (TCP) or 17 (UDP) additional headers would be required
+ip_check = 0         # The kernel will fill in the checksum for the packet
+ip_srcadd = socket.inet_aton(src_ip)  # inet_aton(string) will convert an IP address to a 32 bit binary number
+ip_dstadd = socket.inet_aton(dst_ip)  # inet_aton(string) will convert an IP address to a 32 bit binary number
+src_ip = "127.0.0.1"
+dst_ip = "127.0.0.1"
+
+#Lets add the IPv4 header information
+ip_ver_ihl = 69  # This is putting the decimal conversion of 0x45 for Version and Internet Header Length
+ip_tos = 0           # This combines the DSCP and ECN feilds
+ip_len = 0           # The kernel will fill in the actually length of the packet
+ip_id = 12345        # This sets the IP Identification for the packet
+ip_frag = 0          # This sets fragmentation to off
+ip_ttl = 64          # This determines the TTL of the packet when leaving the machine
+ip_proto = 16        # This sets the IP protocol to 16 (Chaos). If this was 6 (TCP) or 17 (UDP) additional headers would be required
+ip_check = 0         # The kernel will fill in the checksum for the packet
+ip_srcadd = socket.inet_aton(src_ip)  # inet_aton(string) will convert an IP address to a 32 bit binary number
+ip_dstadd = socket.inet_aton(dst_ip)  # inet_aton(string) will convert an IP address to a 32 bit binary number
 
 
+#Getting a Message to a remote team Utilizing a specific host (BLUE_DMZ_HOST-1)#
+coded information: 867-5309 Jenny
+port number = 5309
+BLUE-DMZ-HOST-1: 172.16.1.15
+Message: Jenny
+>vi message.py
 
+    #!/usr/bin/python3
+    import socket
+    import os
+    port = 5309
+    
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
+    ip_addr = '172.16.1.15'
+    s.connect((ip_addr, port))
+    message = b"Message"
+    s.send(message)
+    data, conn = s.recvfrom(1024)
+    print(data.decode('utf-8'))
+    s.close()
 
-
-
-
+#Getting a Message to a remote team utilizing the specified host (INTERNET_HOST)#
+  Port = 10000
+  Message = Disturbed
+  INTERNET_HOST = PROVIDED FLOAT IP (10.50.30.41)
+  > vi dgram.py
+  
+  #!/usr/bin/python3
+  import socket
+  import os
+  s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, 0)
+  ip_addr = '127.0.0.1'
+  port = 10000
+  message = b"Disturbed"
+  s.sendto(message, (ip_addr, port))
+  data, addr = s.recvfrom(1024)
+  print(data.decode())
+  
 
 
 
