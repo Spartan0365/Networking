@@ -7,9 +7,14 @@ https://miro.com/app/board/o9J_klSqCSY=/?share_link_id=16133753693
 
 #START 
 =================
-#TAGS: #header#,#ARP Types#, #Traceroute# #Firewalking#, #SSH#, #SSH Files#, #tcpdump#, #TTL# in ipv4(6), #TCP DF (Don't Fragment) bit#,#TCP source port#, #Filter for UDP and TCP Packets#,
+
+#TAGS:
+====================================================================================================================================================================================
+#header#,#ARP Types#, #Traceroute# #Firewalking#, #SSH#, #SSH Files#, #tcpdump#, #TTL# in ipv4(6), #TCP DF (Don't Fragment) bit#,#TCP source port#, #Filter for UDP and TCP Packets#,
 #TCP Flags Examples#, #Specific IP ID#
 #Wireshark BPFs#, #P0F Signature Database#, 
+
+#Python#, #Python String#, #Python Integer#, #Python Built In Functions# , #Python Built-In Methods#, #Python How Imports Work#, #Network Programming with Python3#, #The socket.socket Function#
 =================
 
 
@@ -1130,5 +1135,156 @@ P0F Signature Database #P0F Signature Database#, used for passive fingerprinting
   p0f -r capture.pcap
   p0f -r wget.pcap -o /var/log/p0f.log
   cat /var/log/p0f.log | grep {expression}
-    
-    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Socket Programming
+======================
+======  Day 3  =======
+======================
+
+The point of this lesson is to understand TCP Stream, UDP Datagram, and RAW sockets and their vital role as elements for cyber security professionals due to their rolel in network communication protocols. TCP enables reliable, connection-oriented data transmission. UDP Datagram provides lightweight, connectionless communication. RAW sockets provide low-level access to network interfaces. Mastering these allows professionals to analyze network traffic, detect anomalies and develop robust security measures to safeguard against a wide range of cyber threats to enhance the overall resilience of organizational networks. 
+
+Socket Types
+  Stream Sockets - Connection oriented and sequenced; methods for connection establishment and tear-down. Used with TCP, SCTP, and Bluetooth.
+  Datagram Sockets - Connectionless; designed for quickly sending and receiving data. Used with UDP.
+  RAW Sockets - Direct sending and receiving of IP packets without automatic protocol-specific formatting.
+
+User Space vs. Kernel Space Sockets
+   User Space Sockets
+      Stream Sockets
+      Datagram Sockets
+   Kernel Space Sockets
+      RAW Sockets
+
+Socket Creation and Privilege Level
+  User Space Sockets - The most common sockets that do not require elevated privileges to perform actions on behalf of user applications.
+  Kernel Space Sockets - Attempts to access hardware directly on behalf of a user application to either prevent encapsulation/decapsulation or to create packets from scratch, which requires elevated privileges.
+
+Userspace applications/sockets:
+    Using tcpdump or wireshark to read a file
+    Using nmap with no switches
+    Using netcat to connect to a listener
+    Using netcat to create a listener above the well known port range (1024+)
+    Using /dev/tcp or /dev/udp to transmit data
+
+Kernel Space Applications/Sockets
+    Using tcpdump or wireshark to capture packets on the wire
+    Using nmap for OS identification or to set specific flags when scanning
+    Using netcat to create a listener in the well known port range (0 - 1023)
+
+Kernel Space Applications/Sockets
+    Using Scapy to craft or modify a packet for transmission
+    Using Python to craft or modify RAW Sockets for transmission
+    Network devices using routing protocols such as OSPF
+    Any Traffic without Transport Header (ICMP)
+
+Understanding Python Terminology #Python#
+    Libraries (Standard Python Library) ; (prebuilt storage locations to grab modules from, and these modules have functions)
+        Modules (_import module)
+            Functions (module.function)
+            Exceptions (try:)
+            Constants (AF_INET)
+            Objects ()
+            List [] vs Tuple ()
+
+#Python String# String (example):
+    my_string = "Hello World"
+    Bytes-like-object
+      message = b"Hello World"
+
+#Python Integer# Integer (examples):
+    int = 1234
+    float = 3.14
+    hex = 0x45
+
+#Python Built In Functions#  (Examples):
+    int()
+    len() (number of characters in an object)
+    str()
+    sum()
+    print() (prints to screen)
+
+#Python Built-In Methods# (Examples):
+    my_string.upper()
+    my_string.lower()
+    my_string.split()
+    my_list.append()
+    my_list.insert()
+
+#Python How Imports Work#
+  -Be careful not to import a module over one you have already imported. 
+    import {module}
+    import {module} as {name}
+    from {module} import * (imports everything from the provided module)
+    from {module} import {function}
+    from {module} import {function} as {name}
+
+
+Python3 Libraries and References
+  Socket
+  Struct
+  Sys
+  Errors
+  Exceptions
+
+#Network Programming with Python3#
+  Network sockets primarily use the Python3 Socket library and socket.socket function. Example:
+  
+    import socket
+  s = socket.socket(socket.FAMILY, socket.TYPE, socket.PROTOCOL)
+
+
+#The socket.socket Function#
+  Inside the socket.socket. function, you have these arguments, in order:
+    socket.socket( *family*, *type*, *proto* )
+
+  family: AF_INET*, AF_INET6, AF_UNIX
+  type: SOCK_STREAM*, SOCK_DGRAM, SOCK_RAW
+  proto: 0*, IPPROTO_TCP, IPPROTO_UDP, IPPROTO_IP, IPPROTO_ICMP, IPPROTO_RAW
+
+
+Stream Socket Sender Demo
+    #!/usr/bin/python3
+    import socket
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
+    ip_addr = '127.0.0.1'
+    port = 1111
+    s.connect((ip_addr, port))
+    message = b"Message"
+    s.send(message)
+    data, conn = s.recvfrom(1024)
+    print(data.decode('utf-8'))
+    s.close()
+
+chmod +x new.py  (what I named the file)
+  
+
+
+
+
+
+
+
+
+
+
+
