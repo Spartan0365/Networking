@@ -17,6 +17,8 @@ https://miro.com/app/board/o9J_klSqCSY=/?share_link_id=16133753693
 #Python#, #Python String#, #Python Integer#, #Python Built In Functions# , #Python Built-In Methods#, #Python How Imports Work#, #Network Programming with Python3#, #The socket.socket Function#
 
 #Hex Encoding and Decoding#, #Python Hex Encoding#, #Base64 Encoding and Decoding#, #Python Base64 Encoding#, #Stream Socket Sender Demo#
+#Getting a Message to a remote team Utilizing a specific host (BLUE_DMZ_HOST-1) using STREAM SOCKET#
+#Getting a Message to a remote team utilizing the specified host (INTERNET_HOST) using DATAGRAM SOCKET#
 
 #RAW IPV$ and TCP SOCKET DEMO#
 =================
@@ -1404,7 +1406,7 @@ ip_srcadd = socket.inet_aton(src_ip)  # inet_aton(string) will convert an IP add
 ip_dstadd = socket.inet_aton(dst_ip)  # inet_aton(string) will convert an IP address to a 32 bit binary number
 
 
-#Getting a Message to a remote team Utilizing a specific host (BLUE_DMZ_HOST-1)#
+#Getting a Message to a remote team Utilizing a specific host (BLUE_DMZ_HOST-1) using STREAM SOCKET#
 coded information: 867-5309 Jenny
 port number = 5309
 BLUE-DMZ-HOST-1: 172.16.1.15
@@ -1425,7 +1427,7 @@ Message: Jenny
     print(data.decode('utf-8'))
     s.close()
 
-#Getting a Message to a remote team utilizing the specified host (INTERNET_HOST)#
+#Getting a Message to a remote team utilizing the specified host (INTERNET_HOST) using DATAGRAM SOCKET#
   Port = 10000
   Message = Disturbed
   INTERNET_HOST = PROVIDED FLOAT IP (10.50.30.41)
@@ -1442,9 +1444,20 @@ Message: Jenny
   data, addr = s.recvfrom(1024)
   print(data.decode())
   
+#Modify ipraw.py #
 
+Source IP: 10.10.0.40
+Target IP: 172.16.1.15
+DSCP: 24 (to change this you need to account for the ECN field as well, picuture below
+                    DSCP       | ECN
+                    0 0 0 0 0 0| 0 0
+                    0 1 1 0 0 0| 0 0  <----
+The bits were orignially shifted two to the right, to equal 24, but since DSCP and ECN are part of the same field, this must be accounted for by shifting it left)                    
+IP ID: 1984
+Protocol: CHAOS
 
-
+use below to listen:
+nc -lvp 1111
 
 
 
