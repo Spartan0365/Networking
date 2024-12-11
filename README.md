@@ -1459,9 +1459,19 @@ Protocol: CHAOS
 use below to listen:
 nc -lvp 1111
 
+#modify tcpraw.py#
 
+Source IP: 10.10.0.40
+Target IP: 172.16.1.15
+IP ID: 2020
+TCP Src port: 54321
+TCP Dst port: 1234
+SEQ Number: 90210
+ACK Number: 30905
+TCP flag: SYN
 
-
+use below to listen: 
+nc -lvp 1111
 
 
 
