@@ -30,10 +30,11 @@ Network Discovery:
                                 #File search# , #SSH Config#
 #Active Internal Discovery# - #ARP Scanning# , #Ping Scanning# , #DEV TCP Banner Grab# , #DEV TCP Scanning#  , 
 #Network Forensics - Mapping#
+#CTFs Network Reconnaissance:#
 
 =================
 
-float info : 10.50.26.58 , Your Network Number is 1 (Given by Instructor) , Credentials: net1_studentX:passwordX , X is your student number
+float info : 10.50.26.58 , Your Network Number is 1 (Given by Instructor) , Credentials: net1_studentX:passwordX , X is your student number : ssh net1_student1@10.50.26.58 (password is: password1)
 Float info - ssh student@10.50.30.41 -X (connect through remmina)
 Red Boundry Router , Hostname: unk, IP: 172.16.120.1, Ports: 22, Username: vyos, Password: password
 
@@ -2052,13 +2053,71 @@ Network Mapping Tools
     Explain Everything Whiteboard
 
 
-CTFs Network Reconnaissance:
+#CTFs Network Reconnaissance:#
   start by:
     > dig networking-ctfd-1.server.vta TXT
     from here you can decrypt the base64 text found, and that is your start flag.
+
+  connect to float: ssh net1_student1@10.50.26.58 (password is: password1)
+    conduct active recon against target: Red Boundry Router
+        for i in {1..254}; do (ping -c 1 172.16.120.$i | grep "bytes from" &) ; done 
+        result:
+      64 bytes from 172.16.120.1: icmp_seq=1 ttl=62 time=0.877 ms
+      64 bytes from 172.16.120.2: icmp_seq=1 ttl=63 time=0.329 ms
+      64 bytes from 172.16.120.10: icmp_seq=1 ttl=62 time=0.605 ms
+      64 bytes from 172.16.120.9: icmp_seq=1 ttl=61 time=1.50 ms
+      64 bytes from 172.16.120.18: icmp_seq=1 ttl=61 time=0.821 ms
+      64 bytes from 172.16.120.17: icmp_seq=1 ttl=60 time=2.09 ms
+
+        maybe perform nmap against these targets?
+
+    you can also SSH into the router: ssh vyos@172.16.120.1 (password is: password)
+      to get hostname: show host name [enter]
     
+    Routers that vyos@172.16.120.1 is connected to:
+     eth0 ether 176.16.120.12 , fa:16:3e:0f:8a:8a
+                  
 
+     eth2 ether 172.16.101.2 , fa:16:3e:90:0f:13 , Linux 4.19.0-18 Debian , known creds : net_student1:password1, ports: 22
+     
+     ^these are all hosts, and you can ssh into each of them with the creds: net_student1:password1
 
+     interface ethernet:
+      eth 0 172.16.120.1/29 Description 'INTERNET' 
+      eth1 172.16.120.10/29 Description 'REDNET', hostname: RED-SCR
+                         172.16.120.9, fa:16:3e:eb:49:e6, vyos 1.1.7 , known creds vyos:password, ports 22 (router), hostname RED-IPs (device connected to donovian boundary on eth1) ,
+                               (1)   eth0             172.16.120.9/29                   u/u  INTERNET 
+                               (1)   eth1             172.16.120.18/29                  u/u  REDNET 
+                                       172.16.120.17            ether   fa:16:3e:9e:5b:43   C                     eth1 , host name , RED-POP, vyos 1.1.7, 
+                                              eth0             172.16.120.17/29                  u/u  INTERNET 
+                                                  (1) 172.16.120.18            ether   fa:16:3e:e9:25:1e   C                     eth0
+                                              eth1             172.16.182.126/27                 u/u  REDHOSTS 
+                                                  (1) 172.16.182.106, ports 22 , (T4) , Linux 3.1
+                                                  (2) 172.16.182.110, ports 22 80, Linux 3.1
+                                                  (3) 172.16.182.114 ports 22 , Linux 3.1
+                                                  (4) 172.12.182.118, ports 22 , Linux 3.1
+                                                  (5) 172.16.182.126, ports 22, Linux 3.2
+                                              eth2             172.16.140.6/29                   u/u  REDINTDMZ 
 
+                                       172.16.120.19                    (incomplete)                              eth1
+                                       172.16.120.20                    (incomplete)                              eth1
+                                       172.16.120.21                    (incomplete)                              eth1
+                                       172.16.120.22                    (incomplete)                              eth1
+                                                         
+                                                lo               127.0.0.1/8                       u/u  
+
+      eth2 172.16.101.30/27 Description 'DMZ'
+                      eth0             172.16.120.1/29                   u/u  INTERNET 
+                      eth1             172.16.120.10/29                  u/u  REDNET 
+                      eth2             172.16.101.30/27                  u/u  DMZ 
+                      lo               127.0.0.1/8                       u/u 
+                      
+    note: try a ping sweep across these ranges.
+    
+FLAGS:
+show interfaces (this will show the total number of host devices. In this case it's only one, as only one has a different IP)
+nmap -sV 172.16.101.30/27 (this will show you the total number of host device(s) under the DMZ network, which is 172.16.101.30/27)
+                          (this will also get you the well known ports (in this case, just port 22))
+ssh 172.16.101.2 (use the creds provided, and then run a hostname to get its hostname).
 
 
