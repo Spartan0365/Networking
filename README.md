@@ -1738,7 +1738,7 @@ Scanning Nature
     
 Scanning Strategy
     Remote to Local
-    Local to Remote
+    Local to Remote ( this strategy can be used to obscure ones scanning activities from a tgt system, while potentially implicating the transient host in legal consequences)
     Local to Local
     Remote to Remote
 
@@ -2093,7 +2093,7 @@ Network Mapping Tools
                                                   (1) 172.16.120.18            ether   fa:16:3e:e9:25:1e   C                     eth0
                                               eth1             172.16.182.126/27                 u/u  REDHOSTS 
                                                   (1) 172.16.182.106, ports 22 , (T4) , Linux 3.1
-                                                  (2) 172.16.182.110, ports 22 80, Linux 3.1
+                                                  (2) 172.16.182.110, ports 22 80 1980 1982 1988 1989 (TCP) & 1984 1989 (UDP), (T2), Linux 3.1
                                                   (3) 172.16.182.114 ports 22 , Linux 3.1
                                                   (4) 172.12.182.118, ports 22 , Linux 3.1
                                                   (5) 172.16.182.126, ports 22, Linux 3.2
@@ -2119,5 +2119,7 @@ show interfaces (this will show the total number of host devices. In this case i
 nmap -sV 172.16.101.30/27 (this will show you the total number of host device(s) under the DMZ network, which is 172.16.101.30/27)
                           (this will also get you the well known ports (in this case, just port 22))
 ssh 172.16.101.2 (use the creds provided, and then run a hostname to get its hostname).
-
-
+sudo nmap -sU 172.16.182.126/27 ( this will list hidden UDP ports)
+echo "hello" | nc -u 172.16.82.106 53 (this will allow you to touch a port and prompt a question it may have, if any).
+          (the answer to this prompted question is 'which dig")
+ping -s ( this can be used to send an abnormally large ICMP packet to the target).
