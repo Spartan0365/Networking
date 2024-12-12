@@ -33,6 +33,9 @@ Network Discovery:
 
 =================
 
+float info : 10.50.26.58 , Your Network Number is 1 (Given by Instructor) , Credentials: net1_studentX:passwordX , X is your student number
+Float info - ssh student@10.50.30.41 -X (connect through remmina)
+Red Boundry Router , Hostname: unk, IP: 172.16.120.1, Ports: 22, Username: vyos, Password: password
 
 DAY 1
 ==================================================================
@@ -2049,7 +2052,11 @@ Network Mapping Tools
     Explain Everything Whiteboard
 
 
-
+CTFs Network Reconnaissance:
+  start by:
+    > dig networking-ctfd-1.server.vta TXT
+    from here you can decrypt the base64 text found, and that is your start flag.
+    
 
 
 
