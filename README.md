@@ -24,7 +24,7 @@ Socket Programming:
 
 Network Discovery:
 #Passive External Discovery# -  #Ways to Look up DNS information#, 
-#Active External Discovery# - #Ping# , #NMAP Defaults# , #Traceroute - Firewalking# , #Netcat - Horizontal Scanning# , #Netcat - Vertical Scanning#
+#Active External Discovery# - #Ping# , #NMAP Defaults#, #NMAP syntax examples# , #Traceroute - Firewalking# , #Netcat - Horizontal Scanning# , #Netcat - Vertical Scanning#
                               #TCP SCAN SCRIPT# , #UDP SCAN SCRIPT# , #BANNER GRABBING# , #CURL and WGET#
 #Passive Internal Discovery# - #Packet Sniffers# , #IP Configuration# , #DNS configuration# , #ARP Cache# , #Network connections# , #Services File# , #OS Information# , #Running Processes# , #Command path# , #Routing Table#
                                 #File search# , #SSH Config#
@@ -1807,7 +1807,7 @@ NMAP - Other options
     -PE - ICMP Ping
     -Pn - No Ping
 
-NMAP - Time-Out
+NMAP - Time-Out (you don't really have any businesses using these unless you know what you are doing)
     -T0 - Paranoid - 300 Sec
     -T1 - Sneaky - 15 Sec
     -T2 - Polite - 1 Sec
@@ -1822,6 +1822,14 @@ NMAP - Delay
 NMAP - Rate Limit
     --min-rate <number> - Minimum packets per second
     --max-rate <number> - Max packets per second
+
+#NMAP syntax examples#:
+  nmap -sV -p 22,53,110,143,4564 198.116.0-255.1-127 (Launches host enumeration and a TCP scan at the first half of each of the 255 possible eight-bit subnets in the 198.116.0.0/16 address space. This tests whether the systems run                                                           SSH, DNS, POP3, or IMAP on their standard ports, or anything on port 4564. For any of these ports found open, version detection is used to determine what application is running.)
+  nmap -sS -p 22,80,443 192.168.1.0/24 (this scans all IP addresses within the 192.168.1.0 network with a /24 subnet mask)
+  nmap -sn 192.168.1.1-100  (this scans all IP addresses from 192.168.1.1 to 192.168.1.100 for active hosts)
+  nmap -O 192.168.1.0/24 (this attempts to identify the operating systems running on hosts within the network) 
+  Remember: you can combine these options in many ways to enchance your scan to get the results you need at one time. 
+  Helpful Site: https://nmap.org/book/man-examples.html
 
 #Traceroute - Firewalking#
     traceroute 172.16.82.106
@@ -1841,25 +1849,26 @@ Netcat - Scanning
   
 #Netcat - Horizontal Scanning#
     Range of IPs for specific ports:
-      TCP
+      --TCP--
     for i in {1..254}; do nc -nvzw1 172.16.82.$i 20-23 80 2>&1 & done | grep -E 'succ|open'
          or 
-      UDP
+      --UDP--
     for i in {1..254}; do nc -nuvzw1 172.16.82.$i 1000-2000 2>&1 & done | grep -E 'succ|open'
 
 #Netcat - Vertical Scanning#
     Range of ports on specific IP
-      TCP
-    nc -nzvw1 172.16.82.106 21-23 80 2>&1 | grep -E 'succ|open'
+      --TCP--
+    nc -nzvw1 172.16.82.106 21-23 80 2>&1 | grep -E 'succ|open'   (this is looking for 'successor' or 'open' )
         or
-      UDP
-    nc -nuzvw1 172.16.82.106 1000-2000 2>&1 | grep -E 'succ|open'
+      --UDP--
+    nc -nuzvw1 172.16.82.106 1000-2000 2>&1 | grep -E 'succ|open' (this is looking for 'successor' or 'open' )
 
+--------------------------------------------------------------------
 Netcat - TCP Scan Script   #TCP SCAN SCRIPT#
     #!/bin/bash
     echo "Enter network address (e.g. 192.168.0): "
     read net
-    echo "Enter starting host range (e.g. 1): "
+    echo "Enter starting host range (e.g. 1): "  
     read start
     echo "Enter ending host range (e.g. 254): "
     read end
@@ -1869,9 +1878,11 @@ Netcat - TCP Scan Script   #TCP SCAN SCRIPT#
     do
         nc -nvzw1 $net.$i $ports 2>&1 | grep -E 'succ|open'
     done
-
+    (When you run this script, it will prompt you to input any required info,--
+     and remember, while conducting these scans, you can still conduct passive external reconnaissance.
+     Don't waste your time!)
+-----------------------------------------------------------------------
 Netcat - UDP Scan Script #UDP SCAN SCRIPT#
-
     #!/bin/bash
     echo "Enter network address (e.g. 192.168.0): "
     read net
@@ -1885,24 +1896,28 @@ Netcat - UDP Scan Script #UDP SCAN SCRIPT#
     do
         nc -nuvzw1 $net.$i $ports 2>&1 | grep -E 'succ|open'
     done
+------------------------------------------------------------------------
 
-
-Netcat - Banner Grabbing #BANNER GRABBING#
-      Find what is running on a particular port
+Netcat - Banner Grabbing #BANNER GRABBING# (This is how you can know what port is on a box, using the transport layer protocol. You would get a result of TCP if you scanned 22 (ssh), this is especially convenient when 
+                                            trying to see the versions of each protocol. Different versions are vulnerable to their own exploits.)
+      Find what is running on a particular port (examples):
         nc [Target IP] [Target Port]
         nc 172.16.82.106 22
         nc -u 172.16.82.106 53
       -u : To switch to UDP
-
-Curl and Wget #CURL and WGET#
+    Note: Sometimes this command takes a few seconds to enumerate your information. Don't Ctr+C just because it's taking a little while. 
+    
+Curl and Wget #CURL and WGET#  (WGET is by far the more helpful one. Use this one instead if you have the choice.)
     Both can be used to interact with the HTTP, HTTPS and FTP protocols.
     Curl - Displays ASCII
       curl http://172.16.82.106
       curl ftp://172.16.82.106
-    Wget - Downloads (-r recursive)
+    Wget - The Download option is '-r' (recursive). You want to download it to get everything. It will create a directory of everything it got. You can use this with websites as a way of navigating them. It might be worth learning                how to navigate websites as a means of exploring them, instead of using the webbrowser. (Look into it!)
+      Syntax:
       wget -r http://172.16.82.106
       wget -r ftp://172.16.82.106
-
+    ftp 10.10.0.40
+      ftp> get README  (learn a little more about how to make this work)
 
 Describe Methods Used for #Passive Internal Discovery#
    
@@ -1914,7 +1929,7 @@ Describe Methods Used for #Passive Internal Discovery#
 
 #IP Configuration#
     Windows: ipconfig /all
-    Linux: ip address (ifconfig depreciated)
+    Linux: 'ip address' (ifconfig depreciated) or 'ip addr'
     VyOS: show interface
 
 #DNS configuration#
@@ -1927,8 +1942,10 @@ Describe Methods Used for #Passive Internal Discovery#
 
 #Network connections#
     Windows: netstat
-    Linux: ss (netstat depreciated)
-
+    Linux: ss (netstat depreciated) 
+    Note: when you see 0.0.0.0*, it's a wildcard; 'everything but this port'. if you see 127.0.0.1:6010, that means you can only access 6010 through loopback!
+          'ss' will show what to connect to a port through. Go based of what it shows. 
+          
     Example options useful for both netstat and ss: -antp
     a = Displays all active connections and ports.
     n = No determination of protocol names. Shows 22 not SSH.
@@ -1946,26 +1963,29 @@ Describe Methods Used for #Passive Internal Discovery#
 
 #Running Processes#
     Windows: tasklist
-    Linux: ps or top
-
+    Linux: ps or top (ps - elf, htop, top -tree)
+      note: to kill processes, you can you 'kill -9' or 'pkill', you need its name for pkill.
+      
     Example options useful for ps: -elf
     e = Show all running processes
     l = Show long format view
     f = Show full format listing
   
 #Command path#
-    which
-    whereis
+    which        (if you don't have permission to run 'whereis' you can run this one instead)
+    whereis      (whereis tcpdump - this checks for the location of tcpdump if it's installed)
+
 
 #Routing Table#
-    Windows: route print
-    Linux: ip route (netstat -r deprecated)
+    Windows: route print 
+    Linux: ip route (netstat -r deprecated) (these are routes to networks)
     VyOS: show ip route
     
 #File search#
-    find / -name hint* 2> /dev/null
+    find / -name hint* 2> /dev/null 
     find / -iname flag* 2> /dev/null
-
+  Note: (consider using these throughout the challenges. They might actually be helpful ._. )
+  
 #SSH Config#
     Windows: C:\Windows\System32\OpenSSH\sshd_config
     Linux: /etc/ssh/sshd_config
@@ -1979,24 +1999,26 @@ Active Internal Network Reconnaissance
     Scope and addresses may differ
 
 #ARP Scanning#
-    arp-scan --interface=eth0 --localnet
+    arp-scan --interface=eth0 --localnet 
     nmap -sP -PR 172.16.82.96/27
 
-#Ping Scanning#
-  ping -c 1 172.16.82.106
-  for i in {1..254}; do (ping -c 1 172.16.82.$i | grep "bytes from" &) ; done
-  sudo nmap -sP 172.16.82.96/27
-
+#Ping Scanning# (PING SWEEPS!)
+    ping -c 1 172.16.82.106
+    for i in {1..254}; do (ping -c 1 172.16.82.$i | grep "bytes from" &) ; done    (this is will mass scan for all boxes within the range provided at the beginning)
+    sudo nmap -sP 172.16.82.96/27
+     note: Ping sweeping is the quickets way to see if the box is up. This should be the first thing you do when targetting a box. It'll save you time before mass nmap scanning, by showing you which IPs are up first!
+   
 #DEV TCP Banner Grab#
-  exec 3<>/dev/tcp/172.16.82.106/22; echo -e "" >&3; cat <&3
-
+    exec 3<>/dev/tcp/172.16.82.106/22; echo -e "" >&3; cat <&3
+    nmap -sn 192.168.1.1-100
+    
 #DEV TCP Scanning#
-  for p in {1..1023}; do(echo >/dev/tcp/172.16.82.106/$p) >/dev/null 2>&1 && echo "$p open"; done
-
+    for p in {1..1023}; do(echo >/dev/tcp/172.16.82.106/$p) >/dev/null 2>&1 && echo "$p open"; done 
+   note: If you don't have netcat, you can use this isntead. 
 
 Perform Network Forensics
 
-#Network Forensics - Mapping#
+#Network Forensics - Mapping# (ALWAYS REQUEST A NETWORK MAP WHEREVER YOU GO ON MISSION, this will give you a baseline of what's presently in use and allow you to pinpoint anything new)  
     Diagram devices
     Line Types
     Written Information
@@ -2006,6 +2028,7 @@ Perform Network Forensics
 Network Forensics - Mapping (see link)
 https://net.cybbh.io/public/networking/latest/07_discovery/fg.html#_7_5_1_map_a_network
 
+Things to include on your Map:
     Device type (Router/host)
     System Host-names
     Interface names (eth0, eth1, etc)
@@ -2024,10 +2047,6 @@ Network Mapping Tools
     Ziteboard
     Tutorialspoint Whiteboard
     Explain Everything Whiteboard
-
-
-
-
 
 
 
