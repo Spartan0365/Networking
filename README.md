@@ -25,7 +25,7 @@ Socket Programming:
 Network Discovery:
 #Passive External Discovery# -  #Ways to Look up DNS information#, 
 #Active External Discovery# - #Ping# , #NMAP Defaults#, #NMAP syntax examples# , #Traceroute - Firewalking# , #Netcat - Horizontal Scanning# , #Netcat - Vertical Scanning#
-                              #TCP SCAN SCRIPT# , #UDP SCAN SCRIPT# , #BANNER GRABBING# , #CURL and WGET#
+                              #TCP SCAN SCRIPT# , #UDP SCAN SCRIPT# , #BANNER GRABBING# , #CURL and WGET interface with webservers#
 #Passive Internal Discovery# - #Packet Sniffers# , #IP Configuration# , #DNS configuration# , #ARP Cache# , #Network connections# , #Services File# , #OS Information# , #Running Processes# , #Command path# , #Routing Table#
                                 #File search# , #SSH Config#
 #Active Internal Discovery# - #ARP Scanning# , #Ping Scanning# , #DEV TCP Banner Grab# , #DEV TCP Scanning#  , 
@@ -1797,7 +1797,7 @@ NMAP Scan Types
     Null scan (-sN)
     FIN scan (-sF)
     XMAS tree scan (-sX)
-    UDP scan (-sU)
+    UDP scan (-sU) (this scan wil detect open ports by checking for the absence of ICMP port unreachable messages)
     Idle scan (-sI)
     Decoy scan (-D)
     ACK/Window scan (-sA)
@@ -1911,7 +1911,7 @@ Netcat - Banner Grabbing #BANNER GRABBING# (This is how you can know what port i
       -u : To switch to UDP
     Note: Sometimes this command takes a few seconds to enumerate your information. Don't Ctr+C just because it's taking a little while. 
     
-Curl and Wget #CURL and WGET#  (WGET is by far the more helpful one. Use this one instead if you have the choice.)
+Curl and Wget #CURL and WGET interface with webservers#  (WGET is by far the more helpful one. Use this one instead if you have the choice.)
     Both can be used to interact with the HTTP, HTTPS and FTP protocols.
     Curl - Displays ASCII
       curl http://172.16.82.106
@@ -1923,6 +1923,9 @@ Curl and Wget #CURL and WGET#  (WGET is by far the more helpful one. Use this on
     ftp 10.10.0.40
       ftp> get README  (learn a little more about how to make this work)
 
+    If you get a png file, you can open it by using the 'eog' command. 
+    example:
+     > eog hint-01 
 Describe Methods Used for #Passive Internal Discovery#
    
 #Packet Sniffers#
@@ -1937,7 +1940,7 @@ Describe Methods Used for #Passive Internal Discovery#
     VyOS: show interface
 
 #DNS configuration#
-    Windows: ipconfig /displaydns
+    Windows: ipconfig /displaydns ( this command will display the contents of the DNS client resolver cache)
     Linux: cat /etc/resolv.conf
 
 #ARP Cache#
@@ -2078,27 +2081,28 @@ Network Mapping Tools
      eth0 ether 176.16.120.12 , fa:16:3e:0f:8a:8a
                   
 
-     eth2 ether 172.16.101.2 , fa:16:3e:90:0f:13 , Linux 4.19.0-18 Debian , known creds : net_student1:password1, ports: 22
+     eth2 ether 172.16.101.2 , fa:16:3e:90:0f:13 , Linux 4.19.0-18 Debian , known creds : net1_student1:password14, ports: 22
      
      ^these are all hosts, and you can ssh into each of them with the creds: net_student1:password1
 
      interface ethernet:
       eth 0 172.16.120.1/29 Description 'INTERNET' 
-      eth1 172.16.120.10/29 Description 'REDNET', hostname: RED-SCR
+      eth1 172.16.120.10/29 Description 'REDNET', hostname: RED-SCR (Donovian Boundary)
                          172.16.120.9, fa:16:3e:eb:49:e6, vyos 1.1.7 , known creds vyos:password, ports 22 (router), hostname RED-IPs (device connected to donovian boundary on eth1) ,
                                (1)   eth0             172.16.120.9/29                   u/u  INTERNET 
                                (1)   eth1             172.16.120.18/29                  u/u  REDNET 
-                                       172.16.120.17            ether   fa:16:3e:9e:5b:43   C                     eth1 , host name , RED-POP, vyos 1.1.7, 
+                                       172.16.120.17            ether   fa:16:3e:9e:5b:43   C                     eth1 , host name , RED-POP, vyos 1.1.7,  (Inner Boundary)
                                               eth0             172.16.120.17/29                  u/u  INTERNET 
                                                   (1) 172.16.120.18            ether   fa:16:3e:e9:25:1e   C                     eth0
                                               eth1             172.16.182.126/27                 u/u  REDHOSTS 
-                                                  (1) 172.16.182.106, ports 22 , (T4) , Linux 3.1
+                                                  (1) 172.16.182.106, ports 22 , (T4) , Linux 3.1, hostname red-host-1 , 
                                                   (2) 172.16.182.110, ports 22 80 1980 1982 1988 1989 (TCP) & 1984 1989 (UDP), (T2), Linux 3.1
-                                                  (3) 172.16.182.114 ports 22 , Linux 3.1
-                                                  (4) 172.12.182.118, ports 22 , Linux 3.1
+                                                  (3) 172.16.182.114 ports 22 , (T5) Linux 3.1 , hostname red-host-3
+                                                  (4) 172.12.182.118, ports 22 , (T6) Linux 3.1, hostname red-host4
                                                   (5) 172.16.182.126, ports 22, Linux 3.2
                                               eth2             172.16.140.6/29                   u/u  REDINTDMZ 
-
+                                                      (1) 172.16.140.5/29 , hostname: REP-POP2, 
+                                                      (2) 172.16.140.62/27 
                                        172.16.120.19                    (incomplete)                              eth1
                                        172.16.120.20                    (incomplete)                              eth1
                                        172.16.120.21                    (incomplete)                              eth1
@@ -2106,8 +2110,12 @@ Network Mapping Tools
                                                          
                                                 lo               127.0.0.1/8                       u/u  
 
-      eth2 172.16.101.30/27 Description 'DMZ'
-                      eth0             172.16.120.1/29                   u/u  INTERNET 
+      eth2 172.16.101.30/27 Description 'DMZ' , creds: vyos:password, hostname : RED-SCR
+                      eth0             172.16.120.1/29      
+
+                      
+net1_student1@red-internet-host:~$ ssh net1_student14@172.16.182.110
+         u/u  INTERNET 
                       eth1             172.16.120.10/29                  u/u  REDNET 
                       eth2             172.16.101.30/27                  u/u  DMZ 
                       lo               127.0.0.1/8                       u/u 
@@ -2120,6 +2128,8 @@ nmap -sV 172.16.101.30/27 (this will show you the total number of host device(s)
                           (this will also get you the well known ports (in this case, just port 22))
 ssh 172.16.101.2 (use the creds provided, and then run a hostname to get its hostname).
 sudo nmap -sU 172.16.182.126/27 ( this will list hidden UDP ports)
-echo "hello" | nc -u 172.16.82.106 53 (this will allow you to touch a port and prompt a question it may have, if any).
+echo "hello" | nc -u 172.16.82.106 53 (this will allow you to touch a port and prompt a question it may have, if any.).
           (the answer to this prompted question is 'which dig")
 ping -s ( this can be used to send an abnormally large ICMP packet to the target).
+> eog hint-01.png (this will open the image file so that you can get the hint).
+    (The port range you get from the answer is 2000-2999)
