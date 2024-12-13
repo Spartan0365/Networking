@@ -38,8 +38,10 @@ Network Discovery:
 
 =================
 
-float info : 10.50.26.58 , Your Network Number is 1 (Given by Instructor) , Credentials: net1_studentX:passwordX , X is your student number : ssh net1_student1@10.50.26.58 (password is: password1)
-Float info - ssh student@10.50.30.41 -X (connect through remmina)
+RED float info : 10.50.26.58 , Your Network Number is 1 (Given by Instructor) , Credentials: net1_studentX:passwordX , X is your student number : ssh net1_student1@10.50.26.58 (password is: password1)
+BLUE Float info - ssh student@10.50.30.41 -X (connect through remmina) 
+            Command: ssh student@10.50.30.41 -X   (password: password)
+            
 Red Boundry Router , Hostname: unk, IP: 172.16.120.1, Ports: 22, Username: vyos, Password: password
 
 DAY 1
@@ -2326,7 +2328,7 @@ NETCAT Relay Demos
 Listener - Listener
       On Blue_Host-1 Relay:
         $ mknod mypipe p      (the named pipe will take the output of a command and sends it as the input to another command, it essentially creates a file marker in memory and doesn't save anything to the disk)
-        $ nc -lvp 1111 < mypipe | nc -lvp 3333 > mypipe    (basically, anything that is the output of nc -lvp 111, will become the named pipe, and will go to the next command)
+        $ nc -lvp 1111 < mypipe | nc -lvp 3333 > mypipe    (basically, anything that is the output of nc -lvp 1111, will become the named pipe, and will go to the next command)
       On Internet_Host (send):
         $ nc 172.16.82.106 1111 < secret.txt 
       On Blue_Priv_Host-1 (receive):
@@ -2475,3 +2477,25 @@ Transfer file with Base64
 
 
       
+
+CTF Challenges Netcat Relay:
+       T1  (Internet Host/Me) = 10.50.30.41
+       RELAY (Blue-int-dmz-host-1) = 172.16.40.10 
+       T2  (Blue_Host-4) = 172.16.82.115
+
+  start: 
+1).   (from RELAY): nc -lvp 1234 > file.jpg
+      (from Internet_host): nc -lvp 1111 > file1.jpg
+      (from RELAY): nc 10.10.0.40 1111 < file.jpg (10.10.0.40 is the internal IP, which we use to txfer this)
+      (from Internet_host): [ctrl + c] and check for the file. 
+                         steghide extract -sf file1.jpg
+                         (file is extracted)
+                         cat phrase1.txt | md5sum
+                         you now have your answer.
+                
+
+
+
+
+
+
