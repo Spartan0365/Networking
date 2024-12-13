@@ -100,7 +100,7 @@ Token Ring -
 
 Data Link Sub-Layers:
 MAC (Media(or medium?) Access Control)
-LLC (Logical Link Control)
+LLC (Logical Link Control)6abd7feac505f1384e6f98e3d1e8ba95
 
 Message Formatting Method and Teminology:
 Frames -
@@ -2492,10 +2492,33 @@ CTF Challenges Netcat Relay:
                          (file is extracted)
                          cat phrase1.txt | md5sum
                          you now have your answer.
-                
+                      
 
 
+  start: 
+2).   (from RELAY): nc 4321 > 2steg.jpg
+      (from Internet_host): nc -lvp 1111 > 2steg.jpg
+      (from RELAY): nc 10.10.0.40 1111 < 2steg.jpg
+      (from Internet_host): [ctrl + c ]  and check for file
+                            steghide extract -sf 2steg.jpg
+                            (file is extracted)
+                            cat phrase2.txt | md5sum
+                            you now have your answer.
 
+3).   (from RELAY): nc 172.16.82.115 6789 > 3steg.jpg (this one is contacting T2 and basically saying "I've made contact, give me the message" and that's how you get it)
+      (from Internet_host): nc -lvp 1111 > 3steg.jpg
+      (from RELAY): nc 10.10.0.40 1111 < 3steg.jpg
+      (from internet_host): [ctrl + c] and check for file
+                            steghide extract -sf 3steg.jpg
+                            cat phrase3.txt | md5sum
+                            you now have your answer
 
-
+4).   (from RELAY) nc 172.16.82.115 9876 > 4steg.jpg
+      (from Internet_host): nc -lvp 1111 > 4steg.jpg
+      (from RELAY): nc 10.10.0.40 1111 < 4steg.jpg
+      (from internet_host): [ctrl + c ]  and check for file
+                            steghide extract -sf 4steg.jpg
+                            (file is extracted)
+                            cat phrase4.txt | md5sum
+                            you now have your answer.
 
