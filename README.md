@@ -2105,7 +2105,7 @@ Network Mapping Tools
                                                                eth1             172.16.140.62/27                  u/u  REDINTDMZ2
                                                       (2) 172.16.140.62/27 
                                                                172.16.140.33, ports 22 80 2305 2800 2828 (TCP) , (T3)
-                                                               172.16.140.35, ports 22
+                                                               172.16.140.35, ports 22 , (T7) , hostname red-int-dmz2-host-2 , creds net1_student14:password14
                                                            
                                                
 
@@ -2136,5 +2136,11 @@ traceroute 10.50.23.214 (this will get you the total number of hops from the Int
 'nslookup -type=NS dtic.mil' or 'dig dtic.mil NS' (this will get you the total number of Name Server (NS) records for a given host)
 sudo nmap -sU 172.16.140.33 -p 2000-2999 (this will get you the total number of UDP ports open within the specified range, for the specified ip address)
 nslookup dtic.mil, whois 214.48.252.101 (the nslookup will resolve the domain name to an IP address. From there you can use the whois command to successfully get the associated city and state, and other info).
+36). echo "hello" | nc -u 172.16.140.33 2000 (the -u option will allow you to use the 'nc' command on UDP ports)
+                o get this one, try running dig 214.48.252.101 (resolved IP for dtic.mil)
 
-
+37). echo "hello" | nc -u 172.16.140.33 2011
+                to get this one, try running dig on 208.64.202.36 (resolved IP for steampowered.com)
+To get a SSL Certificate issuer, go to the provided website and look at the 'Site information' button on the left side of the address bar. 
+http://archive.org/web/ (This site can be used to find a history of websites that no longer exists on the ordinary world wide web).
+  
