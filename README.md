@@ -2083,17 +2083,15 @@ Network Mapping Tools
     you can also SSH into the router: ssh vyos@172.16.120.1 (password is: password), hostname RED-SCR ,
       to get hostname: show host name [enter]
     
-    Routers that vyos@172.16.120.1 is connected to:
-     eth0 ether 176.16.120.12 , fa:16:3e:0f:8a:8a
+    Routers that vyos@172.16.120.1 is connected to: 
                   
-
-     eth2 ether 172.16.101.2 , fa:16:3e:90:0f:13 , Linux 4.19.0-18 Debian , known creds : net1_student1:password14, ports: 22
+     eth2 ether 172.16.101.2 , fa:16:3e:90:0f:13 , Linux 4.19.0-18 Debian , known creds : net1_student1:password14, ports:       22
      
      ^these are all hosts, and you can ssh into each of them with the creds: net_student1:password1
 
      interface ethernet:
-      eth 0 172.16.120.1/29 Description 'INTERNET' 
-      eth1 172.16.120.10/29 Description 'REDNET', hostname: RED-SCR (Donovian Boundary)
+      eth 0 172.16.120.1/29 Description 'INTERNET' , fa:16:3e:0f:8a:8a <><><><><>
+      eth1 172.16.120.10/29 Description 'REDNET', hostname: RED-SCR (Donovian Boundary) 
                          172.16.120.9, fa:16:3e:eb:49:e6, vyos 1.1.7 , known creds vyos:password, ports 22 (router), hostname RED-IPs (device connected to donovian boundary on eth1) ,
                                (1)   eth0             172.16.120.9/29                   u/u  INTERNET 
                                                  (1) 172.16.120.12,  fa:16:3e:0f:8a:8a
@@ -2103,7 +2101,7 @@ Network Mapping Tools
                                                   (1) 172.16.120.18            ether   fa:16:3e:e9:25:1e   C                     eth0
                                               eth1             172.16.182.126/27                 u/u  REDHOSTS 
                                                   (1) 172.16.182.106, ports 22 , (T4) , Linux 3.1, hostname red-host-1 , 
-                                                  (2) 172.16.182.110, ports 22 80 1980 1982 1988 1989 (TCP) & 1984 1989 (UDP), (T2), Linux 3.1
+                                                  (2) 172.16.182.110, ports 22 80 1980 1982 1988 1989 (TCP) & 1984 1989                                                           (UDP), (T2), Linux 3.1
                                                   (3) 172.16.182.114 ports 22 , (T5) Linux 3.1 , hostname red-host-3
                                                   (4) 172.12.182.118, ports 22 , (T6) Linux 3.1, hostname red-host4
                                                   (5) 172.16.182.126, ports 22, Linux 3.2
@@ -2111,7 +2109,8 @@ Network Mapping Tools
                                                       (1) 172.16.140.5/29 , hostname: REP-POP2,
                                                                eth1             172.16.140.62/27                  u/u  REDINTDMZ2
                                                       (2) 172.16.140.62/27 
-                                                               172.16.140.33, ports 22 80 2305 2800 2828 (TCP) , (T3)
+                                                          172.16.140.6/29   
+                                                          172.16.140.33, ports 22 80 2305 2800 2828 (TCP) , (T3)
                                                                172.16.140.35, ports 22 , (T7) , hostname red-int-dmz2-host-2 , creds net1_student14:password14
                                                            
                                                
@@ -2120,13 +2119,6 @@ Network Mapping Tools
                       eth0             172.16.120.1/29      
 
                       
-net1_student1@red-internet-host:~$ ssh net1_student14@172.16.182.110
-         u/u  INTERNET 
-                      eth1             172.16.120.10/29                  u/u  REDNET 
-                      eth2             172.16.101.30/27                  u/u  DMZ 
-                      lo               127.0.0.1/8                       u/u 
-                      
-    note: try a ping sweep across these ranges.
     
 FLAGS:
 show interfaces (this will show the total number of host devices. In this case it's only one, as only one has a different IP)
@@ -2144,10 +2136,13 @@ traceroute 10.50.23.214 (this will get you the total number of hops from the Int
 sudo nmap -sU 172.16.140.33 -p 2000-2999 (this will get you the total number of UDP ports open within the specified range, for the specified ip address)
 nslookup dtic.mil, whois 214.48.252.101 (the nslookup will resolve the domain name to an IP address. From there you can use the whois command to successfully get the associated city and state, and other info).
 36). echo "hello" | nc -u 172.16.140.33 2000 (the -u option will allow you to use the 'nc' command on UDP ports)
-                o get this one, try running dig 214.48.252.101 (resolved IP for dtic.mil)
+                start by looking up 214.48.252.101 on https://hackertarget.com/as-ip-lookup/ to get the ASN
+                look up the found ASN (27064) on https://bgpview.io/asn/27064#info. This explore this page and you'll see your answer.
+          
 
 37). echo "hello" | nc -u 172.16.140.33 2011
                 to get this one, try running dig on 208.64.202.36 (resolved IP for steampowered.com)
+                look up dnslookup.com, and put in the domain name (steampowered.com)
 To get a SSL Certificate issuer, go to the provided website and look at the 'Site information' button on the left side of the address bar. 
 http://archive.org/web/ (This site can be used to find a history of websites that no longer exists on the ordinary world wide web).
 
@@ -2484,7 +2479,7 @@ CTF Challenges Netcat Relay:
        T2  (Blue_Host-4) = 172.16.82.115
 
   start: 
-1).   (from RELAY): nc -lvp 1234 > file.jpg
+1).   (from RELAY): nc -lvp 1234 > file.jpg 
       (from Internet_host): nc -lvp 1111 > file1.jpg
       (from RELAY): nc 10.10.0.40 1111 < file.jpg (10.10.0.40 is the internal IP, which we use to txfer this)
       (from Internet_host): [ctrl + c] and check for the file. 
@@ -2522,3 +2517,79 @@ CTF Challenges Netcat Relay:
                             cat phrase4.txt | md5sum
                             you now have your answer.
 
+
+
+
+
+
+GySgt Stone's Methodology
+=========================
+Whenever you finish, take notes. Improve your toolkit as you put it together. 
+Cryptic notification from: 
+RIP - BOB floats 10.50.23.190
+
+Create a diagram.
+Create a square that says "Hostname: BOB??? Ip: Ports:"
+start by trying to ssh into Bob. 
+no success?
+pay attention to the error message.
+"Connection closed by remote host"
+Figure out what's on the ssh port, because something is there. 
+Try banner grabbing. 
+nc 10.50.23.190
+"this is not the port you are looking for. Try again"
+Okay, so... they're playing games with you. Try to nmap next! see what ports are open. 
+nmap -Pn 10.50.23.190 -p - -T5            ('-'all the ports, also T5 is okay to use on the first box in)
+ports open!: 21, 22, 25, 90, 443, 3389    (ftp and http are free info!)
+take a screenshot and copy the info to your diagram.
+run a 'wget -r 10.50.23.190' 
+it worked? Yes.
+try 'wget -r ftp://10.50.23.190' 
+this one didn't work. 
+see what you got from the wget for now (http)
+ls 10.50.23.190
+eom 10.50.23.190/index.html
+try to nc it:
+nc 10.50.23.190  21
+ftp 10.50.23.190
+try username: bob
+try password: bob
+Now that you're in the fpt session:
+  ftp> ls
+     no info
+     > exit
+Update your map, show what you've got from the ports you've exploited.
+try the port 25. 
+nc 10.50.23.190 25
+  provided an ssh version! seems like they designed ssh to port 25 instead. 
+ssh 10.50.23.190 -p 25
+  no success? it says permission denied. BUT, this implies the service is still up and running.
+ssh bob@10.50.23.190 -p 25 
+  but we don't have the creds for bob... how can we do this?
+    sniff and wait on the port with wireshark until somebody tries to telnet in.
+  bobs password: password.
+Now you're in!
+enumerate system info. 
+  ip addr
+    you found the real ip (as opposed to the float, which should never be relied on)
+      'ip neig' will get you the ip addresses you have talked to. 
+      you can also ping sweep the entire range to get all addresses in the network! try it, at least:
+    for i in {1..254}; do (ping -c 1 10.0.0.$i | grep "bytes from" &) ; done
+  Now you've got a list of addresses that have been reached. 
+Try testing port 443, from bob-host now!
+  ss -ntlp
+
+Split screen
+  nc 10.50.23.190 443
+    it's another fake port... let's move on, or if there's a hint work with it. 
+  look for files 
+    find / -iname "*.hint" 2>/dev/null
+    find / -iname "*.flag" 2>/dev/null
+    find / -name "hint*" 2>/dev/null
+    ! there was a hint found. 
+    cat /srv/ftp/hint.txt
+      It gave you a hint. 
+dynamic tunnel
+ssh bob@10.50.23.190 -p 25 -D 9050 -NT (this will create a dynamic tunnel, 9050 is the port you opened on you local machine)
+ss -ntlp 
+run:  'proxychains nmap -Pn 10.0.0.101/24 -p 20-23,80 -T5' or 'proxychains nmap -Pn 10.0.0.101-105 -p 20-23,80 -T5' or 'proxychains nmap -Pn 10.0.0.101,124 -p 20-23,80 -T5'
