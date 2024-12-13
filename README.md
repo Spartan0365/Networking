@@ -2101,14 +2101,13 @@ Network Mapping Tools
                                                   (4) 172.12.182.118, ports 22 , (T6) Linux 3.1, hostname red-host4
                                                   (5) 172.16.182.126, ports 22, Linux 3.2
                                               eth2             172.16.140.6/29                   u/u  REDINTDMZ 
-                                                      (1) 172.16.140.5/29 , hostname: REP-POP2, 
+                                                      (1) 172.16.140.5/29 , hostname: REP-POP2,
+                                                               eth1             172.16.140.62/27                  u/u  REDINTDMZ2
                                                       (2) 172.16.140.62/27 
-                                       172.16.120.19                    (incomplete)                              eth1
-                                       172.16.120.20                    (incomplete)                              eth1
-                                       172.16.120.21                    (incomplete)                              eth1
-                                       172.16.120.22                    (incomplete)                              eth1
-                                                         
-                                                lo               127.0.0.1/8                       u/u  
+                                                               172.16.140.33, ports 22 80 2305 2800 2828 (TCP) , (T3)
+                                                               172.16.140.35, ports 22
+                                                           
+                                               
 
       eth2 172.16.101.30/27 Description 'DMZ' , creds: vyos:password, hostname : RED-SCR
                       eth0             172.16.120.1/29      
@@ -2131,5 +2130,11 @@ sudo nmap -sU 172.16.182.126/27 ( this will list hidden UDP ports)
 echo "hello" | nc -u 172.16.82.106 53 (this will allow you to touch a port and prompt a question it may have, if any.).
           (the answer to this prompted question is 'which dig")
 ping -s ( this can be used to send an abnormally large ICMP packet to the target).
-> eog hint-01.png (this will open the image file so that you can get the hint).
+ 'eog hint-01.png' (this will open the image file so that you can get the hint).
     (The port range you get from the answer is 2000-2999)
+traceroute 10.50.23.214 (this will get you the total number of hops from the Internet_host we're signed into, to the T1 host).
+'nslookup -type=NS dtic.mil' or 'dig dtic.mil NS' (this will get you the total number of Name Server (NS) records for a given host)
+sudo nmap -sU 172.16.140.33 -p 2000-2999 (this will get you the total number of UDP ports open within the specified range, for the specified ip address)
+nslookup dtic.mil, whois 214.48.252.101 (the nslookup will resolve the domain name to an IP address. From there you can use the whois command to successfully get the associated city and state, and other info).
+
+
