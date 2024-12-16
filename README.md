@@ -3195,6 +3195,13 @@ Task 4 - Donovian Data Collection: Will open when Task 3 is complete
     T5 Float IP address is - 10.50.28.46
     Credentials: Same as Task 3.
 
-              
 
+1. Localhost is associated with both Loopback address and 127.0.0.1
+2. 'OPS$ ssh cctc@10.50.1.150 -p 1111' port 1111 is the alternate ssh port on 10.50.1.150
+3. 'OPS$ ssh cctc@localhost -p 1111' port 1111 is the local listening port on OPS
+4. 'ssh cctc@10.50.1.150' 10.50.1.150 is the IP we use to ssh to PC1 from OPS.
+5. 'ssh -D 9050 student@10.50.1.150' will set up a Dynamic tunnel to PC1
+6. 'ssh -L 1111:localhost:22 cctc@10.50.1.150 -NT' this syntax will set up a Local tunnel to PC1's ssh port.
+7. 'ssh cctc@10.50.1.150 -L 1111:localhost:80 -NT ' this syntax will set up a local tunnel to PC1's ssh port.
+8. '
        
