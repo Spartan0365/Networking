@@ -3230,6 +3230,7 @@ terminal 1: wget -r http://localhost:1111
    check to see the contents retrieved.
    cd into the new directory. 
    now cat the html to get the answer (answer is 6to4)
+summary: This creates a local port forward from me (internet_host) to T3 that targets 10.3.0.27:80 
 (2.)
 [IH]    [T3]10.3.0.1 
 Terminal 2: ssh -D 9050 net1_student14@10.50.27.164 -NT (the NT will prevent any responses of making it into the tgt)
@@ -3237,6 +3238,7 @@ Terminal 1: proxychians wget -r ftp://10.3.0.1
       check for contents received
       ls into new directory
       check the files (answer is injection)
+summary: this creates a dynamic port forward from me (internet_host) to T3. 
 (3.)
 [IH]    [T4]10.50.29.131:23
 Terminal 2: telnet 10.50.29.131 (use the net1_student14:password14 credentials to login)
@@ -3245,15 +3247,18 @@ Terminal 2: telnet 10.50.29.131 (use the net1_student14:password14 credentials t
     find / -type f -name "*flag.txt" 2>/dev/null
     cat /usr/share/cctc/flag.txt      (this was the file found)
     (answer is ~/.ssh/known_hosts)
+Summary: we access the target here using telnet. 
 (4.)
 [IH]10.50.30.41    [T3]Pivot,10.50.27.164:80    [T4]10.50.29.131
 Terminal 2:  [IH]: telnet 10.50.29.131
           conduct recon.
           run 'arp' to get the IPs facing you, and see the possible IP for 10.2.0.2 (likely 10.2.0.3)
-Terminal 2:  [Pineland] ssh net1_student14@10.2.0.3 -R 11411:localhost:22 -NT
-(create remote port forward to bind T3 inside IP to a local machine authorized port. This instance connects T3 to localhosts
+Terminal 2:  [Pineland] ssh net1_student14@10.2.0.3 -R 11411:localhost:80 -NT
+(create remote port forward to bind T3's inside IP to a local machine authorized port. This instance connects T3 to localhosts
 authorized port:22 )
 Terminal 3: ssh net1_student14@10.50.27.164 -L 11422:localhost:11411 -NT
 (This will create a local port forward from IH to T3 that targets the port we established in the first tunnel)
-Terminal 4: ssh net1_student14 -p 11411 -L 11433:10.2.0.2:80 -NT
+Terminal 4: 
 
+summary: we start by creating a Remote port forward tunnel from T4 to T3 binding the source as on of my authorized
+ports from the mission prompt, and targetting 10.20.0.2:80. 
