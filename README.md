@@ -36,6 +36,14 @@ Network Discovery:
 #Trivial File Transfer Protocol# , #File Transfer Protocol# , #File Transfer Protocol Secure# , #Secure File Transfer Protocol# , #Secure Copy Protocol# , #SCP Syntax# , #SCP Syntax w/ alternate SSHD# , #SCP Syntax through a tunnel# , 
 #Dynamic Port forward#
 
+SSH Tunneling and Covert Channels
+    #6 in 4# ,  #4 to 6# , #Teredo Tunneling# ,   #ISATAP# , #How to Detect Covert Channels# , #Detecting Covert Channels with ICMP# , #Detecting Covert Channels with HTTP#
+    #Secure Shell (SSH Tunneling)# ,  #SSH First Connect# , #SSH Re-Connect# , #SSH Host key Changed# , #SSH Key Change Fix# , #SSH Port Forwarding# , 
+    #Local Port Forwarding# , #Local Port Forward to localhost of server# , #Local Port Forward to remote target via server# , #Forward through Tunnel# , 
+    #Dynamic Port Forwarding# , #SSH Dynamic Port Forwarding 1-Step# ,#SSH Dynamic Port Forwarding 2-Step# , #Remote Port Forwarding# ,  #Remote Port Forwarding from localhost of client# , 
+    #Remote Port Forwarding to remote target via client# , #Bridging Local and Remote Port Forwarding#
+
+
 =================
 
 RED float info : 10.50.26.58 , Your Network Number is 1 (Given by Instructor) , Credentials: net1_studentX:passwordX , X is your student number : ssh net1_student1@10.50.26.58 (password is: password1)
@@ -2593,3 +2601,589 @@ dynamic tunnel
 ssh bob@10.50.23.190 -p 25 -D 9050 -NT (this will create a dynamic tunnel, 9050 is the port you opened on you local machine)
 ss -ntlp 
 run:  'proxychains nmap -Pn 10.0.0.101/24 -p 20-23,80 -T5' or 'proxychains nmap -Pn 10.0.0.101-105 -p 20-23,80 -T5' or 'proxychains nmap -Pn 10.0.0.101,124 -p 20-23,80 -T5'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#SSH Tunneling and Covert Channels#
+==================
+==    Day 5     ==
+==================
+
+
+
+
+
+
+
+
+OUTCOMES
+    Discuss Local and Dynamic SSH Tunneling
+    Demonstrate Local and Dynamic Port Forward
+    Discuss Remote Port Forwarding
+    Demonstrate Remote Port Forwarding
+
+
+Rationale
+Understanding tunneling, covert channels, steganography,
+and SSH tunneling is crucial for cybersecurity professionals
+to comprehend various methods used for data encapsulation,
+concealment, and secure communication. Tunneling involves
+encapsulating one protocol within another, enabling secure
+transmission of data across untrusted networks. Covert
+channels allow clandestine communication by exploiting unused
+or less-monitored network protocols or channels, posing a
+significant risk for data exfiltration or command and control
+activities. Steganography conceals secret information within
+seemingly innocuous data, making it imperceptible to casual
+observers. SSH tunneling provides a secure encrypted channel
+for remote access and data transfer, safeguarding sensitive
+information from interception or manipulation. Mastery of
+these concepts equips cybersecurity practitioners with the
+knowledge and tools necessary to detect, prevent, and mitigate
+potential threats to data confidentiality, integrity, and
+availability.
+
+
+
+
+Overview of Tunneling
+    Tunneling - Tunneling encapsulates a protocol inside another protocol.
+        Encapsulation
+        Transmission
+        Decapsulation
+
+    Overview of Tunneling
+        Tunneling used in the IPv6 Transition
+        IPv6 over IPv4
+        Dual Stack
+        6in4
+        6to4
+        4in6
+        Teredo
+        ISATAP
+
+    Overview of Tunneling
+      Traffic Tunneling
+        Mainly used for the IPv4 to IPv6 migration
+      Tunneling Malware and Attacks
+        Bypass IPv4-based security measures
+
+
+    IPv6 over IPv4
+      Permits IPv6 to be encapsulated in order to move through a IPv4 network
+      Done by the Dual Stack Router
+      Payload is not generally encrypted
+      IPSEC commonly used to secure the payloads
+
+    Dual Stack
+          Configures an IPv4 and IPv6 address on all devices
+    Resource intensive
+        Allows for IPv4 and IPv6 routing because it has the addresses already set
+    Can use both but not interchangeably
+
+
+    #6 in 4#:
+      Tunnel IPv6 traffic in an IPv4 Generic Routing Encapsulation (GRE) tunnel
+      Simple and deterministic
+      Must be configured manually
+      Commonly used for connecting IPv6 islands over an IPv4 network.
+      Uses IP protocol 41
+      Allows for IPv6 packets to be sent over an IPv4 network
+      Enables automatic tunneling of IPv6 packets over an IPv4 network.
+      Uses 6to4 gateways that encapsulate IPv6 packets within IPv4 packets.
+      Allows communication between IPv6 networks across IPv4 infrastructure.
+      Uses IP protocol 41
+  
+    #4 to 6#:
+      Reverse of 6 to 4
+      Uses Next Header 4
+
+    #Teredo Tunneling#:
+      RFC 4380
+      Allows IPv4 clients to access IPv6 clients
+      Encapsulates IPv6 packets within UDP
+      Commonly used for devices behind NAT
+      Uses the 2001:0000::/32 prefix
+    
+    #ISATAP#:
+      Allows IPv6 hosts to communicate over an IPv4 network within a site (local network)
+      Can be used over the internet for specific site-to-site communications.
+      Generates a Link-Local address using its IPv4 address
+      192.168.199.99 → FE80::0000:5EFE:c0a8:c763
+
+    Covert Channels vs Steganography
+
+    Covert Channels:
+      Using common and legitimate protocols to transfer data in illegitimate ways.
+      Unauthorized/hidden communication between entities.
+      Utilizes computer system resources, mechanisms, or protocols.
+      Transmits information contrary to design intent.
+      Bypasses security, violates policies, leaks sensitive data.
+      
+    Type of Covert Channels:
+      Storage
+        Payload
+        Header (you have to look at these to see what is being modified)
+            IP Header (TOS, IP ID, Flags + Fragmentation, and Options) 
+            TCP Header (Reserved, URG Pointer, and Options)
+        Timing
+            Modifying transmission of legitimate traffic
+            Delaying packets between nodes
+            Watch TTL changes
+            Watch for variances between transmissions
+
+      Common Protocols used with Covert Channels
+        ICMP
+        DNS
+        HTTP
+
+      #How to Detect Covert Channels#:
+        Host Analysis
+          Requires knowledge of each applications expected behavior.
+        Network Analysis
+          A good understanding of your network and the common network protocols being used is the key
+        Baselining of what is normal to detect what is abnormal
+
+
+      #Detecting Covert Channels with ICMP#:
+        ICMP works with one request and one reply answer
+          Type 8 code 0 request
+          Type 0 code 0 answer
+        Check for:
+          Payload imbalance
+          Request/responce imbalance
+          Large payloads in response
+        ICMP Covert Channel Tools:
+          ptunnel
+          Loki
+          007shell
+          ICMP Backdoor
+          B0CK
+          Hans
+
+      Detecting Covert Channels with DNS
+      
+    DNS is a request/response protocol
+      1 request typically gets 1 response
+      Payloads generally do no exceed 512 bytes
+      Check for:
+        Request/response imbalances
+        Unusual payloads
+        Burstiness or continuous use
+    DNS Covert Channel Tools:
+      OzymanDNS
+      NSTX
+      dns2tcp
+      iodine
+      heyoka
+      dnsct2
+
+    #Detecting Covert Channels with HTTP#:
+    Request/Response protocol to pull web content
+      GET request may include .png, .exe, .(anything) files
+      Can vary in sizes of payloads
+      Typically "bursty" but not steady
+    HTTP Covert Channel Tools:
+      tunnelshell tools
+      HTTPTunnel
+      SirTunnel
+      go HTTP tunnel
+
+    Steganography
+      Hiding messages inside legitimate information objects.
+        Methods:
+           Injection
+           Substitution
+           Propagation
+      Steganography Injection:
+        Done by inserting message into the unused (whitespace) of the file, usually in a graphic
+          Second most common method
+          Adds size to the file
+          Hard to detect unless you have original file
+            tools:
+              StegHide
+      Steganography Substitution
+          Done by inserting message into the insignificant portion of the file
+          Most common method used
+          Elements within a digital medium are replaced with hidden information
+          Example:
+            Change color pallate (+1/-1)
+      Steganography Propagation
+          Generates a new file entirely
+          Needs special software to manipulate file
+            tools:
+              StegSecret
+              HyDEn
+              Spammimic
+
+
+      #Secure Shell (SSH Tunneling)#
+        Various Implementations (v1 and v2)
+        Provides authentication, encryption, and integrity.
+        Allows remote terminal sessions
+        Can enable X11 Forwarding
+        Used for tunneling and port forwarding
+        Proxy connections
+      SSH Architecture
+        Client vs Server vs Session
+          Keys:
+            User Key - Asymmetric public key used to identify the user to the server
+            Host Key - Asymmetric public key used to identify the server to the user
+            Session Key - Symmetric key created by the client and server to protect the session’s communication.
+      Configuration Files
+         Client Configuration File (/etc/ssh/ssh_config)
+         Server Configuration File (/etc/ssh/sshd_config)
+         Known Hosts File (~/.ssh/known_hosts)
+      SSH Components:
+         https://net.cybbh.io/public/networking/latest/08_tunneling/fg.html#_4_4_2_components_of_ssh_architecture
+      SSH Architecture:
+         https://net.cybbh.io/public/networking/latest/08_tunneling/fg.html#_4_4_3_ssh_architecture
+
+      #SSH First Connect#
+        student@internet-host:~$ ssh student@172.16.82.106
+        The authenticity of host '172.16.82.106 (172.16.82.106)' can't be established.
+        ECDSA key fingerprint is SHA256:749QJCG1sf9zJWUm1LWdMWO8UACUU7UVgGJIoTT8ig0.
+        Are you sure you want to continue connecting (yes/no)? yes
+        Warning: Permanently added '172.16.82.106' (ECDSA) to the list of known hosts.
+        student@172.16.82.106's password:
+        student@blue-host-1:~$
+      You will need to approve the Server Host (Public) Key
+      Key is saved to /home/student/.ssh/known_hosts
+      
+      #SSH Re-Connect#
+        ssh student@172.16.82.106
+        student@172.16.82.106's password:
+        student@blue-host-1:~$
+      Further SSH connections to server will not prompt to save key as long as key does not change
+
+      #SSH Host key Changed#
+        ssh student@172.16.82.106
+        @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        @    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!     @
+        @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!
+        Someone could be eavesdropping on you right now (man-in-the-middle attack)!
+        It is also possible that a host key has just been changed.
+        The fingerprint for the ECDSA key sent by the remote host is
+        SHA256:RO05vd7h1qmMmBum2IPgR8laxrkKmgPxuXPzMpfviNQ.
+        Please contact your system administrator.
+        Add correct host key in /home/student/.ssh/known_hosts to get rid of this message.
+        Offending ECDSA key in /home/student/.ssh/known_hosts:1
+        remove with:
+        ssh-keygen -f "/home/student/.ssh/known_hosts" -R "172.16.82.106"
+        ECDSA host key for 172.16.82.106 has changed and you have requested strict checking.
+        Host key verification failed.
+        
+      #SSH Key Change Fix#
+          ssh-keygen -f "/home/student/.ssh/known_hosts" -R "172.16.82.106"
+       Copy/Paste the ssh-geygen message to remove the Host key from the known_hosts file
+
+      #SSH Port Forwarding#
+          Creates channels using SSH-CONN protocol
+          Allows for tunneling of other services through SSH
+          Provides insecure services encryption
+      SSH Options:
+        -L - Creates a port on the client mapped to a ip:port via the server
+        -D - Creates a port on the client and sets up a SOCKS4 proxy tunnel where the target ip:port is specified dynamically
+        -R - Creates the port on the server mapped to a ip:port via the client
+        -NT - Do not execute a remote command and disable pseudo-tty (will hang window)
+
+      #Local Port Forwarding#
+        ssh -p <optional alt port> <user>@<server ip> -L <local bind port>:<tgt ip>:<tgt port>
+        or
+        ssh -L <local bind port>:<tgt ip>:<tgt port> -p <alt port> <user>@<server ip>
+
+      #Local Port Forward to localhost of server#
+        Internet_Host:
+          ssh student@172.16.1.15 -L 1122:localhost:22
+          or
+          ssh -L 1122:localhost:22 student@172.16.1.15
+
+          Internet_Host:
+          ssh student@localhost -p 1122
+          Blue_DMZ_Host-1~$
+        Local Port Forward to Localhost of Server:
+          https://net.cybbh.io/public/networking/latest/08_tunneling/fg.html#_4_5_1_1_local_port_forward_to_localhost_of_server
+        
+        Local Port Forward to localhost of server
+          Internet_Host:
+            ssh student@172.16.1.15 -L 1123:localhost:23
+            or
+            ssh -L 1123:localhost:23 student@172.16.1.15
+          Internet_Host:
+            telnet localhost 1123
+            Blue_DMZ_Host-1~$
+          Local Port Forward to Locahost of Server:
+              Internet_Host: https://net.cybbh.io/public/networking/latest/08_tunneling/fg.html#_4_5_1_1_local_port_forward_to_localhost_of_server
+
+        #Local Port Forward to localhost of server#
+          Internet_Host:
+            ssh student@172.16.1.15 -L 1180:localhost:80
+            or
+            ssh -L 1180:localhost:80 student@172.16.1.15         
+          Internet_Host:
+            firefox http://localhost:1180
+            {Webpage of Blue_DMZ_Host-1}
+          Local Port Forward to localhost of server:
+            https://net.cybbh.io/public/networking/latest/08_tunneling/fg.html#_4_5_1_1_local_port_forward_to_localhost_of_server
+
+        #Local Port Forward to remote target via server#
+          Internet_Host:
+            ssh student@172.16.1.15 -L 2222:172.16.40.10:22
+            or
+            ssh -L 2222:172.16.40.10:22 student@172.16.1.15
+          Internet_Host:
+            ssh student@localhost -p 2222 (this would take you through you loopback, through port 2222, and through that, allow you to bypass port 22. It's a work around. The 2222 is hidden.
+                                           If you're on the lookback of student host, this is how you'll get through. Otherwise the tunnel won't work. Notice how you're ssh'ing into 'student@localhost'.)
+            Blue_INT_DMZ_Host-1~$
+          Local Port Forward to remote target via server:
+            https://net.cybbh.io/public/networking/latest/08_tunneling/fg.html#_4_5_1_2_local_port_forward_to_remote_target_via_server
+        
+        #Local Port Forward to remote target via server#
+            Internet_Host:
+              ssh student@172.16.1.15 -L 2223:172.16.40.10:23
+              or
+              ssh -L 2223:172.16.40.10:23 student@172.16.1.15
+            Internet_Host:
+              telnet localhost 2223
+              Blue_INT_DMZ_Host-1~$
+            Local Port Forward to remote target via server:
+              https://net.cybbh.io/public/networking/latest/08_tunneling/fg.html#_4_5_1_2_local_port_forward_to_remote_target_via_server
+
+          #Local Port Forward to remote target via server#
+            Internet_Host:
+                ssh student@172.16.1.15 -L 2280:172.16.40.10:80
+                or
+                ssh -L 2280:172.16.40.10:80 student@172.16.1.15
+            Internet_Host:
+                firefox http://localhost:2280 (this opens a web browser to connect to port 2280, the port opened in the ssh session prior to this command
+                                               NOTE: Sometimes it's easier just to use wget after opening the tunnel, rather than opening the slow web browser)
+                {Webpage of Blue_INT_DMZ_Host-1}
+            Local Port Forward to remote target via server:
+                https://net.cybbh.io/public/networking/latest/08_tunneling/fg.html#_4_5_1_2_local_port_forward_to_remote_target_via_server
+
+          #Forward through Tunnel#
+                Internet_Host:
+                  ssh student@172.16.1.15 -L 2222:172.16.40.10:22
+                  ssh student@localhost -p 2222 -L 3322:172.16.82.106:22
+                Internet_Host:
+                  ssh student@localhost -p 3322
+                  Blue_Host-1~$
+          Forward through Tunnel:
+            https://net.cybbh.io/public/networking/latest/08_tunneling/fg.html#_4_5_1_3_local_port_forward_through_a_previously_established_port_forward_to_extend_a_tunnel
+
+          #Forward through Tunnel#
+            Internet_Host:
+                ssh student@172.16.1.15 -L 2222:172.16.40.10:22
+                ssh student@localhost -p 2222 -L 3323:172.16.82.106:23
+            Internet_Host:
+                telnet localhost 3323
+                Blue_Host-1~$
+            Forward through Tunnel:
+                https://net.cybbh.io/public/networking/latest/08_tunneling/fg.html#_4_5_1_3_local_port_forward_through_a_previously_established_port_forward_to_extend_a_tunnel
+            Internet_Host:
+                ssh student@172.16.1.15 -L 2222:172.16.40.10:22
+                ssh student@localhost -p 2222 -L 3380:172.16.82.106:80
+            Internet_Host:
+                  firefox http://localhost:3380
+                  {Webpage of Blue_Host-1}
+            Forward through Tunnel:
+                https://net.cybbh.io/public/networking/latest/08_tunneling/fg.html#_4_5_1_3_local_port_forward_through_a_previously_established_port_forward_to_extend_a_tunnel
+
+
+            #Dynamic Port Forwarding#
+                ssh <user>@<server ip> -p <alt port> -D <port>
+                or
+                ssh -D <port> -p <alt port> <user>@<server ip>
+              Proxychains default port is 9050
+              Creates a dynamic socks4 proxy that interacts alone, or with a previously established remote or local port forward.
+              Allows the use of scripts and other userspace programs through the tunnel.
+
+          #SSH Dynamic Port Forwarding 1-Step#
+          Internet_Host:
+              ssh student@172.16.1.15 -D 9050  (You can only have 1 dynamic channle open at a time)
+              or
+              ssh -D 9050 student@172.16.1.15 
+          #SSH Dynamic Port Forwarding 1-Step#:
+              https://net.cybbh.io/public/networking/latest/08_tunneling/fg.html#_4_5_2_1_dynamic_port_forwarding_to_server (this is a pretty informative photo)
+          #SSH Dynamic Port Forwarding 1-Step#
+              Internet_Host:
+              proxychains ./scan.sh
+              proxychains nmap -Pn 172.16.40.0/27 -p 21-23,80
+              proxychains ssh student@172.16.40.10
+              proxychains telnet 172.16.40.10
+              proxychains wget -r http://172.16.40.10
+              proxychains wget -r ftp://172.16.40.10
+            Remember, the 'proxychains' command only forwards network traffic. If you were to simpy run a 'hostname' it would pull only the local_host IP address.
+            You can run these commands ^ once you've opened up your SSH session. 
+            It's VERY useful for running 'wgets'. 
+
+          #SSH Dynamic Port Forwarding 2-Step#
+              Internet_Host:
+                ssh student@172.16.1.15 -L 2222:172.16.40.10:22 
+                or
+                ssh -L 2222:172.16.40.10:22 student@172.16.1.15
+              Internet_Host:
+                ssh student@localhost -p 2222 -D 9050
+                or
+                ssh -D 9050 student@localhost -p 2222
+              (Note: You can run both the -D and -L ssh options with their commands together, but they can cause problems. not advised.)
+              
+          #SSH Dynamic Port Forwarding 2-Step#
+              Internet_Host:
+                proxychains ./scan.sh
+                proxychains nmap -Pn 172.16.82.96/27 -p 21-23,80
+                proxychains ssh student@172.16.82.106
+                proxychains telnet 172.16.82.106
+                proxychains wget -r http://172.16.82.106
+                proxychains wget -r ftp://172.16.82.106
+
+          #Remote Port Forwarding#
+                ssh -p <optional alt port> <user>@<server ip> -R <remote bind port>:<tgt ip>:<tgt port>
+                or
+                ssh -R <remote bind port>:<tgt ip>:<tgt port> -p <alt port> <user>@<server ip>
+          
+            #Remote Port Forwarding from localhost of client#
+              Blue_DMZ_Host-1:
+                  ssh student@10.10.0.40 -R 4422:localhost:22
+                  or
+                  ssh -R 4422:localhost:22 student@10.10.0.40
+              Internet_Host:
+                  ssh student@localhost -p 4422
+                  Blue_DMZ_Host-1~$
+              Remote Port Forwarding from localhost of client:
+                  https://net.cybbh.io/public/networking/latest/08_tunneling/fg.html#_4_5_3_1_remote_port_forwarding_from_localhost_of_client
+                
+            #Remote Port Forwarding from localhost of client#
+               Blue_DMZ_Host-1:
+                  ssh student@10.10.0.40 -R 4423:localhost:23
+                  or
+                  ssh -R 4423:localhost:23 student@10.10.0.40
+               Internet_Host:
+                  telnet localhost 4423
+                  Blue_DMZ_Host-1~$
+            Remote Port Forwarding from localhost of client
+                https://net.cybbh.io/public/networking/latest/08_tunneling/fg.html#_4_5_3_1_remote_port_forwarding_from_localhost_of_client
+
+            #Remote Port Forwarding from localhost of client#
+                Blue_DMZ_Host-1:
+                    ssh student@10.10.0.40 -R 4480:localhost:80
+                    or
+                    ssh -R 4480:localhost:80 student@10.10.0.40
+                Internet_Host:
+                    firefox http://localhost:4480
+                    {Webpage of Blue_DMZ_Host-1}
+                Remote Port Forwarding from localhost of client:
+                    https://net.cybbh.io/public/networking/latest/08_tunneling/fg.html#_4_5_3_1_remote_port_forwarding_from_localhost_of_client
+
+            #Remote Port Forwarding to remote target via client#
+                Blue_DMZ_Host-1:
+                    ssh student@10.10.0.40 -R 5522:172.16.40.10:22
+                    or
+                    ssh -R 5522:172.16.40.10:22 student@10.10.0.40
+                Internet_Host:
+                    ssh student@localhost -p 5522
+                    Blue_INT_DMZ_Host-1~$
+                Remote Port Forwarding to remote target via client:
+                    https://net.cybbh.io/public/networking/latest/08_tunneling/fg.html#_4_5_3_2_remote_port_forwarding_to_remote_target_via_client
+
+            #Remote Port Forwarding to remote target via client#
+                Blue_DMZ_Host-1:
+                    ssh student@10.10.0.40 -R 5523:172.16.40.10:23
+                    or
+                    ssh -R 5523:172.16.40.10:23 student@10.10.0.40
+                Internet_Host:
+                    telnet localhost 5523
+                    Blue_INT_DMZ_Host-1~$
+                Remote Port Forwarding to remote target via client:
+                    https://net.cybbh.io/public/networking/latest/08_tunneling/fg.html#_4_5_3_2_remote_port_forwarding_to_remote_target_via_client
+
+              #Remote Port Forwarding to remote target via client#
+                 Blue_DMZ_Host-1:
+                    ssh student@10.10.0.40 -R 5580:172.16.40.10:80
+                    or
+                    ssh -R 5580:172.16.40.10:80 student@10.10.0.40
+                Internet_Host:
+                    firefox http://localhost:5580
+                    {Webpage of Blue_INT_DMZ_Host-1}
+                https://net.cybbh.io/public/networking/latest/08_tunneling/fg.html#_4_5_3_2_remote_port_forwarding_to_remote_target_via_client
+
+
+             #Combining Local and Remote Port Forwarding#
+             
+              #Bridging Local and Remote Port Forwarding#
+                  Internet_Host:
+                      ssh student@172.16.1.15 -L 2223:172.16.40.10:23
+                      or
+                      ssh -L 2223:172.16.40.10:23 student@172.16.1.15
+                  Internet_Host:
+                      telnet localhost 2223
+                      Blue_INT_DMZ_Host-1~$
+
+               #Bridging Local and Remote Port Forwarding#
+                   Blue_INT_DMZ_Host-1:
+                      ssh student@172.16.1.15 -R 1122:localhost:22
+                      or
+                      ssh -R 1122:localhost:22 student@172.16.1.15
+                                          
+              #Bridging Local and remote Port Forwarding#
+                   Internet_Host:
+                      ssh student@172.16.1.15 -L 2222:localhost:1122
+                      or
+                      ssh -L 2222:localhost:1122 student@172.16.1.15
+  
+              #Bridging Local and Remote Port Forwarding#
+                  Internet_Host:
+                      ssh student@localhost -p 2222 -D 9050
+                      or
+                      ssh -D 9050 student@localhost -p 2222
+                  https://net.cybbh.io/public/networking/latest/08_tunneling/fg.html#_4_5_4_1_bridging_local_and_remote_port_forwarding
+
+              #Bridging Local and Remote Port Forwarding#
+                  Internet_Host:
+                  proxychains ./scan.sh
+                  proxychains nmap -Pn -sT 172.16.82.96/27 -p 21-23,80
+                  proxychains ssh student@172.16.82.106
+                  proxychains telnet 172.16.82.106
+                  proxychains wget -r http://172.16.82.106
+                  proxychains wget -r ftp://172.16.82.106
+
+
+              Perform SSH Practice
+                1). Scan first pivot (use internet host to connect to float IP)
+                2). First Pivot External Active Recon (See what ports are open)
+                3). Enumerate first pivot (map it's details on your map. IPs, CIDRs, all those details you normally map). 
+                4). Second scan pivot (see what ports are open on follow-on devices. Same as step 2-3).
+                5). Enumerate second pivot.
+                6). Scan third pivot
+                7). Enumerate third pivot
+                8). so on...
+              See this link and follow on slides:
+                https://net.cybbh.io/public/networking/latest/08_tunneling/fg.html#_4_6_perform_ssh_practice
+              Provides a list of all commands you can use to practice. 
+              
+
+
+
+
+              
+
+       
