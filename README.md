@@ -3195,21 +3195,65 @@ Task 4 - Donovian Data Collection: Will open when Task 3 is complete
     T5 Float IP address is - 10.50.28.46
     Credentials: Same as Task 3.
 
-#CTFS#
+#CTFS (task 2)#
 (1.) Localhost is associated with both Loopback address and 127.0.0.1
 (2.) 'OPS$ ssh cctc@10.50.1.150 -p 1111' port 1111 is the alternate ssh port on 10.50.1.150
 (3.) 'OPS$ ssh cctc@localhost -p 1111' port 1111 is the local listening port on OPS
 (4.) 'ssh cctc@10.50.1.150' 10.50.1.150 is the IP we use to ssh to PC1 from OPS.
 (5.) 'ssh -D 9050 student@10.50.1.150' will set up a Dynamic tunnel to PC1
 (6.) 'ssh -L 1111:localhost:22 cctc@10.50.1.150 -NT' this syntax will set up a Local tunnel to PC1's ssh port.
-         (7.) 'ssh -D 9050 cctc@localhost -p 1111 -NT' This will create a dynamic tunnel using the local tunnel created in question 6 (dynamic port forward through previously established port forward).
-               (8.) 'wget -r http://localhost:1111' This will allow you to download the webpage of PC1 using the local tunnel created in question 7 (you already have a tunnel open on port 1111 on the local host, that's why you can use localhost:1111)
-                     9. 'proxychains wget -r http://100.1.1.2' This will allow you to download the webpage of PC2 using the dynamic tunnel created in question 8.
-        (12.) 'ssh ssh cctc@localhost -p 1111 -L 2222:100.1.1.2:22 -NT' This will set up a second local tunnel to  PC2's ssh port usin the tunnel made in Question 6.
-               (14.) 'ssh -D 9050 cctc@localhost -p 2222 -NT' This will create a dynamic tunnel using the local tunnel from question 12. 
-               (17.) 'ssh -L 3333:192.168.1.2:23 cctc@localhost -p 2222'  This will allow you to use the tunnels in questions 6 & 12 to set up a 3rd local tunnel to PC3's telnet port. 
-        (13.) 'ssh -L 2222:100.1.1.2:80 cctc@localhost -p 111' This will create a second local tunnel to PC2's HTTP port using the tunnel mdae in Question 6. 
+         (7.) 'ssh -D 9050 cctc@localhost -p 1111 -NT' This will create a dynamic tunnel using the local tunnel                      created in question 6 (dynamic port forward through previously established port forward).
+               (8.) 'wget -r http://localhost:1111' This will allow you to download the webpage of PC1 using the                           local tunnel created in question 7 (you already have a tunnel open on port 1111 on the local 
+                     host, that's why you can use localhost:1111)
+                     (9.) 'proxychains wget -r http://100.1.1.2' This will allow you to download the webpage of PC2 
+                           using the dynamic tunnel created in question 8.
+        (12.) 'ssh ssh cctc@localhost -p 1111 -L 2222:100.1.1.2:22 -NT' This will set up a second local tunnel to                    PC2's ssh port usin the tunnel made in Question 6.
+               (14.) 'ssh -D 9050 cctc@localhost -p 2222 -NT' This will create a dynamic tunnel using the local                             tunnel from question 12. 
+               (17.) 'ssh -L 3333:192.168.1.2:23 cctc@localhost -p 2222'  This will allow you to use the tunnels in                           questions 6 & 12 to set up a 3rd local tunnel to PC3's telnet port. 
+                     (18). 'telnet localhost               
+               (20). 'ssh cctc@localhost 2222 -L 5555:localhost:4444' this will connect the Tunnel made in                                 Question 19 to the tunnels in question 6 & 12. The reason 5555:localhost:4444 makes sense 
+                     here is because port 4444 was ultimately assigned to localhost. 
+        (13.) 'ssh -L 2222:100.1.1.2:80 cctc@localhost -p 111' This will create a second local tunnel to PC2's HTTP 
+              port using the tunnel mdae in Question 6. 
 (10.) 'ssh cctc@10.50.1.150 -L 1111:100.1.1.2:22 -NT' This will set up a local tunnel to PC2 using PC1 as your pivot.
 (11.) 'ssh cctc@10.50.1.150 -L 1111:100.1.1.2:22 -NT' This will allow me to open a local tunnel to PC2's ssh port using PC1 as my pivot.
 (15.) The error is in line 2, where the user authenticates to the wrong IP address. The IP address to authenticate to should be the local host. 
 (16.) The error is in line 1, where the user targeted the wrong IP. The correct Ip is 192.168.1.2.
+(19.) 'ssh -R 4444:192.168.2.2:22 cctc@192.168.2.1 -NT' This will allow the user to set up a remote tunnel from PC3 back to PC2 using PC3s ssh port as the target. 
+
+#CTFS (Task 3)#
+(1.)  
+[IH]   [T3]10.3.0.27:80         (T3 (Atropia) Float IP address is - 10.50.27.164)
+terminal 2: internet_host$ ssh net1_student14@10.50.30.41 -L 1111:10.3.0.27:80 -NT (once ran, you will see no 
+response.)
+terminal 1: wget -r http://localhost:1111
+   check to see the contents retrieved.
+   cd into the new directory. 
+   now cat the html to get the answer (answer is 6to4)
+(2.)
+[IH]    [T3]10.3.0.1 
+Terminal 2: ssh -D 9050 net1_student14@10.50.27.164 -NT (the NT will prevent any responses of making it into the tgt)
+Terminal 1: proxychians wget -r ftp://10.3.0.1
+      check for contents received
+      ls into new directory
+      check the files (answer is injection)
+(3.)
+[IH]    [T4]10.50.29.131:23
+Terminal 2: telnet 10.50.29.131 (use the net1_student14:password14 credentials to login)
+    Once in, conduct passive recon.
+    In this case, find a file that has a question for your flag. 
+    find / -type f -name "*flag.txt" 2>/dev/null
+    cat /usr/share/cctc/flag.txt      (this was the file found)
+    (answer is ~/.ssh/known_hosts)
+(4.)
+[IH]10.50.30.41    [T3]Pivot,10.50.27.164:80    [T4]10.50.29.131
+Terminal 2:  [IH]: telnet 10.50.29.131
+          conduct recon.
+          run 'arp' to get the IPs facing you, and see the possible IP for 10.2.0.2 (likely 10.2.0.3)
+Terminal 2:  [Pineland] ssh net1_student14@10.2.0.3 -R 11411:localhost:22 -NT
+(create remote port forward to bind T3 inside IP to a local machine authorized port. This instance connects T3 to localhosts
+authorized port:22 )
+Terminal 3: ssh net1_student14@10.50.27.164 -L 11422:localhost:11411 -NT
+(This will create a local port forward from IH to T3 that targets the port we established in the first tunnel)
+Terminal 4: ssh net1_student14 -p 11411 -L 11433:10.2.0.2:80 -NT
+
