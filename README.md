@@ -3167,7 +3167,7 @@ Overview of Tunneling
                   proxychains wget -r ftp://172.16.82.106
 
 
-              Perform SSH Practice
+              Perform SSH Practice (This is an example of what the instructor did looked like, for jumping through differing hosts using ssh tunneling.)
                 1). Scan first pivot (use internet host to connect to float IP)
                 2). First Pivot External Active Recon (See what ports are open)
                 3). Enumerate first pivot (map it's details on your map. IPs, CIDRs, all those details you normally map). 
@@ -3180,7 +3180,8 @@ Overview of Tunneling
                 https://net.cybbh.io/public/networking/latest/08_tunneling/fg.html#_4_6_perform_ssh_practice
               Provides a list of all commands you can use to practice. 
               
-
+              WE WILL BE TESTED ON EVERY CONCEPT IN THIS DAYS WORK ^.   
+               also, usr/share/CTCC. Look into this file to enumerate also.
 
 
 
