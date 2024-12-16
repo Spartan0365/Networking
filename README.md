@@ -3019,7 +3019,7 @@ Overview of Tunneling
 
           #SSH Dynamic Port Forwarding 1-Step#
           Internet_Host:
-              ssh student@172.16.1.15 -D 9050  (You can only have 1 dynamic channle open at a time)
+              ssh student@172.16.1.15 -D 9050  (You can only have 1 dynamic channel open at a time)
               or
               ssh -D 9050 student@172.16.1.15 
           #SSH Dynamic Port Forwarding 1-Step#:
@@ -3195,13 +3195,21 @@ Task 4 - Donovian Data Collection: Will open when Task 3 is complete
     T5 Float IP address is - 10.50.28.46
     Credentials: Same as Task 3.
 
-
-1. Localhost is associated with both Loopback address and 127.0.0.1
-2. 'OPS$ ssh cctc@10.50.1.150 -p 1111' port 1111 is the alternate ssh port on 10.50.1.150
-3. 'OPS$ ssh cctc@localhost -p 1111' port 1111 is the local listening port on OPS
-4. 'ssh cctc@10.50.1.150' 10.50.1.150 is the IP we use to ssh to PC1 from OPS.
-5. 'ssh -D 9050 student@10.50.1.150' will set up a Dynamic tunnel to PC1
-6. 'ssh -L 1111:localhost:22 cctc@10.50.1.150 -NT' this syntax will set up a Local tunnel to PC1's ssh port.
-7. 'ssh cctc@10.50.1.150 -L 1111:localhost:80 -NT ' this syntax will set up a local tunnel to PC1's ssh port.
-8. '
-       
+#CTFS#
+(1.) Localhost is associated with both Loopback address and 127.0.0.1
+(2.) 'OPS$ ssh cctc@10.50.1.150 -p 1111' port 1111 is the alternate ssh port on 10.50.1.150
+(3.) 'OPS$ ssh cctc@localhost -p 1111' port 1111 is the local listening port on OPS
+(4.) 'ssh cctc@10.50.1.150' 10.50.1.150 is the IP we use to ssh to PC1 from OPS.
+(5.) 'ssh -D 9050 student@10.50.1.150' will set up a Dynamic tunnel to PC1
+(6.) 'ssh -L 1111:localhost:22 cctc@10.50.1.150 -NT' this syntax will set up a Local tunnel to PC1's ssh port.
+         (7.) 'ssh -D 9050 cctc@localhost -p 1111 -NT' This will create a dynamic tunnel using the local tunnel created in question 6 (dynamic port forward through previously established port forward).
+               (8.) 'wget -r http://localhost:1111' This will allow you to download the webpage of PC1 using the local tunnel created in question 7 (you already have a tunnel open on port 1111 on the local host, that's why you can use localhost:1111)
+                     9. 'proxychains wget -r http://100.1.1.2' This will allow you to download the webpage of PC2 using the dynamic tunnel created in question 8.
+        (12.) 'ssh ssh cctc@localhost -p 1111 -L 2222:100.1.1.2:22 -NT' This will set up a second local tunnel to  PC2's ssh port usin the tunnel made in Question 6.
+               (14.) 'ssh -D 9050 cctc@localhost -p 2222 -NT' This will create a dynamic tunnel using the local tunnel from question 12. 
+               (17.) 'ssh -L 3333:192.168.1.2:23 cctc@localhost -p 2222'  This will allow you to use the tunnels in questions 6 & 12 to set up a 3rd local tunnel to PC3's telnet port. 
+        (13.) 'ssh -L 2222:100.1.1.2:80 cctc@localhost -p 111' This will create a second local tunnel to PC2's HTTP port using the tunnel mdae in Question 6. 
+(10.) 'ssh cctc@10.50.1.150 -L 1111:100.1.1.2:22 -NT' This will set up a local tunnel to PC2 using PC1 as your pivot.
+(11.) 'ssh cctc@10.50.1.150 -L 1111:100.1.1.2:22 -NT' This will allow me to open a local tunnel to PC2's ssh port using PC1 as my pivot.
+(15.) The error is in line 2, where the user authenticates to the wrong IP address. The IP address to authenticate to should be the local host. 
+(16.) The error is in line 1, where the user targeted the wrong IP. The correct Ip is 192.168.1.2.
