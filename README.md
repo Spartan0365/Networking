@@ -3183,7 +3183,17 @@ Overview of Tunneling
               WE WILL BE TESTED ON EVERY CONCEPT IN THIS DAYS WORK ^.   
                also, usr/share/CTCC. Look into this file to enumerate also.
 
-
+  CTFs for Today:
+Task 2 - Tunnels Prep: The_Only_Easy_Day_Was_Yesterday
+Task 3 - Donovian Tunnels Training: dig_dug_dig_dug
+    Your Network Number is N (Given by Instructor)
+    Credentials: net{N}_studentX:passwordX
+    X is your student number
+    T3 (Atropia) Float IP address is - 10.50.27.164
+    T4 (Pineland) Float IP address is - 10.50.29.131 (Note - You can only telnet here to act as an insider, this will not be a routed path)
+Task 4 - Donovian Data Collection: Will open when Task 3 is complete
+    T5 Float IP address is - 10.50.28.46
+    Credentials: Same as Task 3.
 
               
 
