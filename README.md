@@ -3258,7 +3258,9 @@ Terminal 2:  [Pineland] ssh net1_student14@10.2.0.3 -R 11411:localhost:80 -NT
 authorized port:22 )
 Terminal 3: ssh net1_student14@10.50.27.164 -L 11422:localhost:11411 -NT
 (This will create a local port forward from IH to T3 that targets the port we established in the first tunnel)
+confirm this port is open by checking from the internal host by running ss -ntlp, to see if the port 11422 is open. 
 Terminal 4: 
 
 summary: we start by creating a Remote port forward tunnel from T4 to T3 binding the source as on of my authorized
-ports from the mission prompt, and targetting 10.20.0.2:80. 
+ports from the mission prompt, and targetting 10.20.0.2:80 (by connecting to its inside IP). We then use another 
+terminal to create a local port to connect T3's tunnel via port 11411 to the local host's port 11422.
