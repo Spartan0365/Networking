@@ -3339,7 +3339,24 @@ Terminal 4: Start by leaving the last dynamic tunnel you created, and reestablis
                         proxychains wget -r ftp://10.5.0.1
                         cd 10.5.0.1
                         cat flag.txt (answer is: ssh-connect)
-              
+
+(9.)
+              Tunnel 1: ssh user@T3(pivot) -L 11411:10.4.0.1:22 -NT
+              Tunnel 2: ssh usre@localhost -L 11411 -D 9050 -NT    
+                    Ih: proxychains wget -r http://10.5.0.1:80 
+                        cat 10.5.0.1/index.html (answer is: SSH-TRANS)
+(10). 
+              Tunnel 1: ssh user@T3(pivot) -L 11411:10.4.0.1:22 -NT
+              Tunnel 2: ssh usre@localhost -L 11411 -D 9050 -NT  
+                    Ih: proxychains wget -r ftp://10.5.0.57
+                        cat 10.5.0.57/flag.txt (answer is: 10.10.0.40)
+(11).
+              Tunnel 1: ssh user@T3(pivot) -L 11411:10.4.0.1:22 -NT
+              Tunnel 2: ssh usre@localhost -L 11411 -D 9050 -NT 
+                    Ih: proxychains wget -r http://10.5.0.57 
+                        cat 10.5.0.57/index.html (answer is: 172.16.82.106)
+(12).
+                        
            
 
             
