@@ -3289,6 +3289,13 @@ Terminal 3: (or which ever terminal is open to use)
             proxychains wget -r ftp://10.2.0.2:21   (this will get you the file that holds the question. The answer is 
             /etc/ssh/ssh_config)
 
+STEPS: set up tunnel 1: ssh net1_student14@10.3.0.10 -R 11411:localhost:22 -NT
+              tunnel 2: ssh net1_student14@10.50.27.164 -L 11422:localhost:11411 -NT
+              tunnel 3: ssh net1_student14@localhost -p 11422 -D 9050 -NT
+              from IH: proxychains ./scan.sh
+              This will get you the IPs/Ports open on the 10.2.0.0 Network. 
+              We figured out from here that 10.3.0.10 can touch the 10.2.0.0 network. 
+              
 (6.)
 terminal 2: continue from the last local port set up at 11422 in Question 4. 
 Terminal 4: ssh net1_student14@10.50.27.164 -D 9050 -NT
@@ -3302,4 +3309,18 @@ Terminal 2: proxychains ./scan.sh    (this will scan for the ports, across a ran
 Terminal 2: from the last question (6). scan for the FTP server on T3. 
             proxychains ./scan.sh (start at 10.3.0 , start at 1 , end at 254 , 21-23 80 )
             proxychains wget -r ftp://10.3.0.27
-            cat 10.3.0.27/flag.txt
+            cat 10.3.0.27/flag.txt (answer is: Teredo)
+(8.)
+Terminal 4: Start by leaving the last dynamic tunnel you created, and reestablish the dynamic tunnel (was able to reach 10.2.0.0/24)
+            Telnet into T4 
+            from T4, ssh into the box it really is (10.2.0.1)
+            look for hints. 
+            find / -iname '*hint*' 
+            cat /etc/share/cctc/hint.txt
+            scan the networks found now. 
+            
+Terminal 2: ssh net1_student14@localhost -p 11422 -D 9050 -NT
+            now, run your script for possible FTP servers.
+            
+            proxychains wget -r ftp://10.2.0.2
+            cat 10.2.0.2/flag.txt
