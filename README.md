@@ -3312,15 +3312,36 @@ Terminal 2: from the last question (6). scan for the FTP server on T3.
             cat 10.3.0.27/flag.txt (answer is: Teredo)
 (8.)
 Terminal 4: Start by leaving the last dynamic tunnel you created, and reestablish the dynamic tunnel (was able to reach 10.2.0.0/24)
-            Telnet into T4 
-            from T4, ssh into the box it really is (10.2.0.1)
-            look for hints. 
-            find / -iname '*hint*' 
-            cat /etc/share/cctc/hint.txt
-            scan the networks found now. 
+            STEPS:
+              tunnel 1: ssh net1_student14@10.3.0.10 -R 11411:localhost:22 -NT
+              tunnel 2: ssh net1_student14@10.50.27.164 -L 11422:localhost:11411 -NT
+              tunnel 3: ssh net1_student14@localhost -p 11422 -D 9050 -NT
+              from IH: proxychains ./scan.sh
+              enumerate the results from the above and try to ssh into the networks found. 
+              Telnet into T4 
+              T4: ssh into the box it really is (10.2.0.3)
+              look for hints. 
+              find / -iname '*hint*' 
+              cat /etc/share/cctc/hint.txt (says we used to have access to: 10.4.0.0/24 and 10.5.0.0/24)
+              scan the networks found now.
             
-Terminal 2: ssh net1_student14@localhost -p 11422 -D 9050 -NT
-            now, run your script for possible FTP servers.
+              # Extend your tunnel
+              Close out the above tunnel(s) ^
+              Tunnel 1: ssh user@T3 -D 9050 -NT
+                    IH: proxychains ./scan.sh (10.4.0.0/24 info 10.4.0.1 [baja-republic])
+                        try to extend this tunnel to reach from 10.4.0.1.
+
+              #Extend your tunnel once more
+              Tunnel 1: ssh user@T3(pivot) -L 11411:10.4.0.1:22 -NT
+              Tunnel 2: ssh usre@localhost -L 11411 -D 9050 -NT
+                    IH: proxychains ./scan.sh (10.5.0.0/24 info)
+                        (exit the ssh session)
+                        proxychains wget -r ftp://10.5.0.1
+                        cd 10.5.0.1
+                        cat flag.txt (answer is: ssh-connect)
+              
+           
+
             
-            proxychains wget -r ftp://10.2.0.2
-            cat 10.2.0.2/flag.txt
+            
+
