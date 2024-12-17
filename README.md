@@ -3357,8 +3357,84 @@ Terminal 4: Start by leaving the last dynamic tunnel you created, and reestablis
                         cat 10.5.0.57/index.html (answer is: 172.16.82.106)
 (12).
                         
-           
 
-            
-            
+#CTFs Task 4#
+credentials for this env:
+netY_studentX:passwordX
+T5 float: 10.50.28.46 (inside Ip 192.168.0.10, on /24)
+(0.)
+    nmap -vvvv -T4 10.50.28.46 -Pn    (just checks for open ports)
+      Port 23 open (answer)
+    telnet 10.50.28.46
 
+(1.) 
+    telnet 10.50.28.46
+    tunnel 1: ssh student@10.50.30.41 -R 11411:localhost:22      (localhost in this isntance is 10.50.28.46 because it's where the 
+    ssh starts)
+    tunnel 2: ssh net1_student14@localhost -p 11411 -D 9050 -NT (if it doesn't connect, the keys may need to be flushed, try below:)
+              (optional for key flushing: ssh-keygen -f "/home/student/.ssh/known_hosts" -R "[localhost]:11411")
+              Try to establish the tunnel again now, if needed. 
+          Ih: proxychains ./scan.sh (enumerate all found hosts)
+              proxychains wget -r http://192.168.0.10:80 
+              eom 192.168.0.10/flag.png (answer: Tatu Ylönen)
+
+(2.) 
+    telnet 10.50.28.46
+    tunnel 1: ssh student@10.50.30.41 -R 11411:localhost:22      (localhost in this isntance is 10.50.28.46 because it's where the 
+    ssh starts)
+    tunnel 2: ssh net1_student14@localhost -p 11411 -D 9050 -NT (if it doesn't connect, the keys may need to be flushed, try below:)
+          Ih: proxychains nmap -vvvv -T4 192.168.0.30 -Pn 
+              proxychains nc 192.168.0.30 4444 (answer is: Finland)
+(3.)
+    telnet 10.50.28.46
+    tunnel 1: ssh student@10.50.30.41 -R 11411:localhost:22      (localhost in this isntance is 10.50.28.46 because it's where the 
+    ssh starts)
+    tunnel 2: ssh net1_student14@localhost -p 11411 -D 9050 -NT (if it doesn't connect, the keys may need to be flushed, try below:)
+          Ih: proxychains nmap -vvvv -T4 192.168.0.20 -Pn 
+              proxychains ssh 192.168.0.20 -p 3333
+
+(4.)
+    telnet 10.50.28.46
+    tunnel 1: ssh student@10.50.30.41 -R 11411:localhost:22      (localhost in this isntance is 10.50.28.46 because it's where the 
+    ssh starts)
+    tunnel 2: ssh net1_student14@localhost -p 11411 -D 9050 -NT (if it doesn't connect, the keys may need to be flushed, try below:)
+          Ih: proxychains ./scan.sh
+              proxychains wget -r http://192.168.0.20:80 
+              eom 192.168.0.20/hint.png 
+              proxychains wget -r ftp://192.168.0.20
+              eom 192.168.0.20/flag.png (answer is: Helsinki University of Technology)
+(5.)          
+     telnet 10.50.28.46
+     tunnel 1: ssh student@10.50.30.41 -R 11411:localhost:22      (localhost in this isntance is 10.50.28.46 because it's where the 
+     ssh starts)
+     tunnel 2: ssh net1_student14@localhost -p 11411 -D 9050 -NT (if it doesn't connect, the keys may need to be flushed, try below:)
+            IH:
+              proxychains nmap -vvvv -T4 192.168.0.20 -Pn
+              proxychains ssh 192.168.0.20 3333 (only this device has access to the next machine)
+              hint found through 192.168.0.20 ports. 
+              create new tunnel to touch new network. 
+      tunnel 1: ssh student@10.50.30.41 -R 11411:192.168.0.20:3333 -NT
+      tunnel 2: ssh net1_student14@localhost -p 11411 -D 9050 -NT
+            Ih: proxychains nmap -vvvv -T4 192.168.0.50 -Pn
+                proxychains wget -r ftp://192.168.0.50
+                eom 192.168.0.50/flag.png
+    
+(6.)
+    telnet 10.50.28.46
+    Tunnel 1: ssh student@10.50.30.41 -R 11411:192.168.0.10:22 -NT
+    Tunnel 2: ssh net1_student14@localhost -p 11411 -D 9050 -NT
+          Ih: proxychains wget -r 192.168.0.40
+              eom 192.168.0.40/flag.png (answer is: AES)
+              
+(7.)
+    telnet 10.50.28.46
+    Tunnel 1: ssh student@10.50.30.41 -R 11411:192.168.0.10:22 -NT
+    Tunnel 2: ssh net1_student14@localhost -p 11411 -D 9050 -NT
+          Ih: Proxychains wget -r 192.168.0.40
+              eom 192.168.0.40/hint.png
+            (8.) Proxychains ./scan.sh (scan for the 172.16.0.0 network)
+                 proxychains nmap -vvvv -t4 172.16.0.60 -Pn 
+                 (found 172.16.0.60)
+                 
+(9.)
+              
