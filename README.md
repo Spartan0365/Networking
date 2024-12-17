@@ -3222,6 +3222,7 @@ Task 4 - Donovian Data Collection: Will open when Task 3 is complete
 (19.) 'ssh -R 4444:192.168.2.2:22 cctc@192.168.2.1 -NT' This will allow the user to set up a remote tunnel from PC3 back to PC2 using PC3s ssh port as the target. 
 
 #CTFS (Task 3)#
+
 (1.)  
 [IH]   [T3]10.3.0.27:80         (T3 (Atropia) Float IP address is - 10.50.27.164)
 terminal 2: internet_host$ ssh net1_student14@10.50.30.41 -L 1111:10.3.0.27:80 -NT (once ran, you will see no 
@@ -3231,6 +3232,7 @@ terminal 1: wget -r http://localhost:1111
    cd into the new directory. 
    now cat the html to get the answer (answer is 6to4)
 summary: This creates a local port forward from me (internet_host) to T3 that targets 10.3.0.27:80 
+
 (2.)
 [IH]    [T3]10.3.0.1 
 Terminal 2: ssh -D 9050 net1_student14@10.50.27.164 -NT (the NT will prevent any responses of making it into the tgt)
@@ -3239,6 +3241,7 @@ Terminal 1: proxychians wget -r ftp://10.3.0.1
       ls into new directory
       check the files (answer is injection)
 summary: this creates a dynamic port forward from me (internet_host) to T3. 
+
 (3.)
 [IH]    [T4]10.50.29.131:23
 Terminal 2: telnet 10.50.29.131 (use the net1_student14:password14 credentials to login)
@@ -3248,20 +3251,51 @@ Terminal 2: telnet 10.50.29.131 (use the net1_student14:password14 credentials t
     cat /usr/share/cctc/flag.txt      (this was the file found)
     (answer is ~/.ssh/known_hosts)
 Summary: we access the target here using telnet. 
+
 (4.)
 [IH]10.50.30.41    [T3]Pivot,10.50.27.164:80    [T4]10.50.29.131
-Terminal 2:  [IH]: telnet 10.50.29.131
-          conduct recon.
-          run 'arp' to get the IPs facing you, and see the possible IP for 10.2.0.2 (likely 10.2.0.3)
-Terminal 2:  [Pineland] ssh net1_student14@10.2.0.3 -R 11411:localhost:80 -NT
-(create remote port forward to bind T3's inside IP to a local machine authorized port. This instance connects T3 to localhosts
-authorized port:22 )
+Terminal 2:  [IH]: telnet 10.50.29.131   
+          
+Terminal 4: ssh net1_student14@10.50.27.164
+            ip a    (confirm the inside IP: 10.3.0.10)
+            exit
+Terminal 2:  [Pineland] ssh net1_student14@10.3.0.10 -R 11411:localhost:22 -NT
+(create remote port forward to bind T3's inside IP to a local machine authorized port. This instance connects T3 to localhosts authorized port:22 )
+
 Terminal 3: ssh net1_student14@10.50.27.164 -L 11422:localhost:11411 -NT
 (This will create a local port forward from IH to T3 that targets the port we established in the first tunnel)
-confirm this port is open by checking from the internal host by running ss -ntlp, to see if the port 11422 is open. 
-Terminal 4: ssh net1_student14@localhost -p 11422 -D 9050 -NT
-(this will get up a dynamic port forwader using to connect a previously established port forward).
-Terminal 1: ?????????????
+confirm this port is open by checking from the internal host by running ss -ntlp, to see if the port 11422 is open.)
+
+Terminal 4: ssh net1_student14@localhost -p 11422 -L 11433:10.2.0.2:80 -NT
+(this will set up a local port forwarder through through the port you most recently opened [11422] and connect it to a new port, [11433], and runs to 10.2.0.2:80.)
+
+Terminal 1: wget -r http://localhost:11433
+(This will connect you through the most recent opening of the tunnel to get to 10.2.0.2 and get you your answer.)
+
 summary: we start by creating a Remote port forward tunnel from T4 to T3 binding the source as on of my authorized
 ports from the mission prompt, and targetting 10.20.0.2:80 (by connecting to its inside IP). We then use another 
 terminal to create a local port to connect T3's tunnel via port 11411 to the local host's port 11422.
+
+# When in doubt with what your tunnels are doing, test them out. SSH net1_student14@local -p [port most recently opened]. Remember to pay attention to where you're opening new ports! example: ssh net1_student14@localhost -p 11422.
+
+(5.)
+[IH]     [T4]
+Terminal 2: Continue off of the last local port set up at 11422 for the last question. 
+          open a new terminal. 
+Terminal 4: ssh net1_student14@localhost -p 11422 -D 9050 -NT
+            (we connect to 11422 here because it's the last port that was able to touch 10.2.0.2)
+Terminal 3: (or which ever terminal is open to use)
+            proxychains nmap -T4 -vvvv 10.2.0.2     (see the ports open)
+            proxychains wget -r ftp://10.2.0.2:21   (this will get you the file that holds the question. The answer is 
+            /etc/ssh/ssh_config)
+
+(6.)
+terminal 2: continue from the last local port set up at 11422 in Question 4. 
+Terminal 4: ssh net1_student14@10.50.27.164 -D 9050 -NT
+Terminal 2: proxychains ./scan.sh    (this will scan for the ports, across a range of IPs, more quickly than nmap).
+            Identify the IPs  that have an HTTP server (port 80 open)
+            proxychains wget -r http://10.3.0.1:80 
+            cd 10.3.0.1
+            cat flag.txt (answer is: substitution)
+            
+(7.)
