@@ -3453,16 +3453,51 @@ T5 float: 10.50.28.46 (inside Ip 192.168.0.10, on /24)
                   Tunnel 3: ssh net1_student14@192.168.0.40 -p 5555 -R 11433:localhost:22 -NT   (this will set up a remote tunnel to the last accessible IP, which is 192.168.0.40)
       L Tunnel 4: ssh net1_student14@localhost -p 11411 -L 11444:localhost:11433 -NT
               IH: proxychains ./scan.sh                                              (collect the info you need for the net)
-                  proxychains nmap -vvvv -T4 -172.16.0.80 -Pn
-                  proxychains nc 172.16.0.80 3389
-                  
-        
+                  proxychains nmap -vvvv -T4 172.16.0.80 -Pn
+                  proxychains nc 172.16.0.80 3389         (answer is: Diffie-Hellman)
+                  (12). 
+                  proxychains nmap -vvv -T4 172.16.0.90 -Pn
+                  Proxychains nc 172.16.0.90 2222
+                  proxychains wget -r 172.16.0.90
+                  proxychains wget -r ftp://172.16.0.90
+                  eom 172.16.0.90/flag.png                 (answer is: Terrapin)
+(13).
+              IH: telnet 10.50.28.46 
+      R Tunnel 1: ssh student@10.50.30.41 -R 11411:192.168.0.40:5555 -NT                         
+      L Tunnel 2: ssh net1_student14@localhost -p 11411 -L 11422:172.16.0.60:23 -NT
+              IH: telnet localhost 11422                                            (see is port 22 is open by running an ss -ntld. If it is, you can use it to open a tunnel for the .40)
+                  Tunnel 3: ssh net1_student14@192.168.0.40 -p 5555 -R 11433:localhost:22 -NT   (this will set up a remote tunnel to the last accessible IP, which is 192.168.0.40)
+      L Tunnel 4: ssh net1_student14@localhost -p 11411 -L 11444:localhost:11433 -NT  (can now ssh into this through ssh net1_comrade14@localhost -p 11444)
+      L Tunnel 5: ssh net1_comrade14@localhost -p 11444 -L 11455:172.16.0.90:2222 -NT 
+      D Tunnel 6: ssh net1_comrade14@localhost -p 11455 -D 9050 -NT
+              IH: proxychains ./scan.sh (host found: 172.16.0.100
 
+(14).
+      IH: telnet 10.50.28.46 
+      R Tunnel 1: ssh student@10.50.30.41 -R 11411:192.168.0.40:5555 -NT                         
+      L Tunnel 2: ssh net1_student14@localhost -p 11411 -L 11422:172.16.0.60:23 -NT
+              IH: telnet localhost 11422                                            (see is port 22 is open by running an                               ss -ntld. If it is, you can use it to open a tunnel for the .40)
+                  Tunnel 3: ssh net1_student14@192.168.0.40 -p 5555 -R 11433:localhost:22 -NT   (this will set up a                                    remote tunnel to the last accessible IP, which is 192.168.0.40)
+      L Tunnel 4: ssh net1_student14@localhost -p 11411 -L 11444:localhost:11433 -NT  (can now ssh into this through ssh                                net1_comrade14@localhost -p 11444)
+      L Tunnel 5: ssh net1_comrade14@localhost -p 11444 -L 11455:172.16.0.90:2222 -NT 
+      D Tunnel 6: ssh net1_comrade14@localhost -p 11455 -D 9050 -NT
+              Ih: ssh net1_comrade14@localhost -p 11455
+                Tunnel 7: 
+      L tunnel 7: ssh net1_comrade14@localhost -p 11455 -R 11466:172.16.0.100:23 -NT
 
+      
+    tcpdump -X icmp
+                ssh net1_student14@192.168.0.40 -p 5555 -R 11433:localhost:22 -NT
 
-                
-
-
+(11.)
+      IH: telnet 10.50.28.46 
+      R Tunnel 1: ssh student@10.50.30.41 -R 11411:192.168.0.40:5555 -NT                         
+      L Tunnel 2: ssh net1_student14@localhost -p 11411 -L 11422:172.16.0.60:23 -NT
+              IH: telnet localhost 11422                                            (see is port 22 is open by running an                               ss -ntld. If it is, you can use it to open a tunnel for the .40)
+                  Tunnel 3: ssh net1_student14@192.168.0.40 -p 5555 -R 11433:localhost:22 -NT   (this will set up a                                    remote tunnel to the last accessible IP, which is 192.168.0.40)
+      L Tunnel 4: ssh net1_student14@localhost -p 11411 -L 11444:localhost:11433 -NT  (can now ssh into this through ssh                                net1_comrade14@localhost -p 11444)
+              Ih: Proxychains nmap 172.16.0.70 1337
+                  proxychains nc 172.16.0.70 1337      (answer is: Shellshock
 
 
 
