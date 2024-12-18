@@ -3450,8 +3450,15 @@ T5 float: 10.50.28.46 (inside Ip 192.168.0.10, on /24)
       R Tunnel 1: ssh student@10.50.30.41 -R 11411:192.168.0.40:5555 -NT                         
       L Tunnel 2: ssh net1_student14@localhost -p 11411 -L 11422:172.16.0.60:23 -NT
               IH: telnet localhost 11422                                            (see is port 22 is open by running an ss -ntld. If it is, you can use it to open a tunnel for the .40)
-                ssh net1_student14@192.168.0.40 -p 5555 -R 11433:localhost:22 -NT   (this will set up a remote tunnel to the last accessible IP, which is 192.168.0.40)
-      ss
+                  Tunnel 3: ssh net1_student14@192.168.0.40 -p 5555 -R 11433:localhost:22 -NT   (this will set up a remote tunnel to the last accessible IP, which is 192.168.0.40)
+      L Tunnel 4: ssh net1_student14@localhost -p 11411 -L 11444:localhost:11433 -NT
+              IH: proxychains ./scan.sh                                              (collect the info you need for the net)
+                  proxychains nmap -vvvv -T4 -172.16.0.80 -Pn
+                  proxychains nc 172.16.0.80 3389
+                  
+        
+
+
 
                 
 
