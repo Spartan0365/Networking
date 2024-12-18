@@ -1,0 +1,44 @@
+Example 1:
+Three boxes
+    [Internet Host]    [T1](port 22)    [T2](port 23)
+Internet Host: ssh user@T1 -L 1111:T2:23 -NT (this will allow us to telnet to T2)
+              (T1 is the pivot)  
+
+Internet Host: telnet 127.0.0.1 1111   (this will put us on the machine T2)
+          T2 : ssh user@T1 -R 2222:127.0.0.0.1:22   (this will open up ssh on T2 to reach T1)
+Internet Host: ssh user@T1 -L 3333:127.0.0.1:2222 -NT (this will bind T1 to internet Host)
+
+
+Example 2: 
+Three boxes
+   [Internet host]    [T1](port22)    [T2](port 80)
+
+Internet Host: ssh user@T1 -L 1111:T2:80 -NT
+
+
+Internet Host: telnet 127.0.0.1 1111
+          T2 : ssh user@t1 -R 2222:127.0.0.0.1:22
+Internet Host: ssh user@t1 -L 3333:127.0.0.1:2222 -NT
+
+
+
+
+
+
+
+
+
+
+
+
+
+#Rick Practice for Extending Tunnels:#
+ telnet 10.50.24.223 (rick)
+  tunnel 1: ssh student@10.50.30.41 -R 11411:localhost:22 -NT
+  tunnel 2: ssh Rick@localhost -p 11411 -L 11422:10.2.1.18:2222 -NT
+  tunnel 3: ssh Morty@localhost -p 11422 -L 11433:172.16.10.121:2323 -NT
+  tunnel 4: ssh Jerry@localhost -p 11433 -L 11444:192.168.10.69:22 -NT
+  tunnel 5: ssh Beth@localhost -p 11444 -D 9050 -NT (dynamic forwarder to bring our tools over)
+        IH: proxychains nc localhost 54321
+            echo 'Life is effort and I'll stop when I die!' | md5sum
+            (this is your answer).
