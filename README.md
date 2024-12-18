@@ -3437,4 +3437,338 @@ T5 float: 10.50.28.46 (inside Ip 192.168.0.10, on /24)
                  (found 172.16.0.60)
                  
 (9.)
-              
+      telnet 10.50.28.46
+      Tunnel 1: ssh student@10.50.30.41 -R 11411:192.168.0.40:5555 -NT
+      Tunnel 2: ssh net1_student14@localhost -p 11411 -D 9050 -NT
+            Ih: proxychains wget -r ftp://172.16.0.60
+                proxychains wget -r 172.16.0.60
+                eom 172.16.0.60/flag.png (answer is: OpenSSH)
+(10.)
+  Network Space Donovia
+  Net1_comrade14:privet14
+      telnet 10.50.28.46 
+      R Tunnel 1: ssh student@10.50.30.41 -R 11411:192.168.0.40:5555 -NT
+      D Tunnel 2: ssh net1_student14@localhost -p 11411 -D 9050 -NT
+      L Tunnel 3: ssh net1_student14@localhost -p 11422 -L 11422:192.168.0.40:5555 -NT
+
+      proxychains telnet 172.16.0.60 23
+      R Tunnel 4: ssh net1_student14@192.168.0.40 -p 5555 -R 11433:172.16.0.60:22 -NT
+      L Tunnel 5: ssh net1_student14@localhost -p 11422 -L 11444:192.168.0.40:11433 -NT
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Network analysis
+================
+==== Day 6 =====
+================
+
+Tools
+    Sensors
+        In-Line
+            Test Access Point (TAP)
+            Man-in-the-Middle (MitM)
+        Out of Band (Passive)
+            Switched Port Analyzer (SPAN)
+
+In-line Sensor
+    Placed between communicating devices to stop attacks
+        Intrusion Prevention System (IPS)
+        Firewall
+    Impacts network latency
+
+Passive Sensor
+    Monitors network segments
+    Can detect attacks but cannot stop them
+    Gets copies of network traffic
+        Intrusion Detection System (IDS)
+    Does not impact network latency
+
+TAP
+    Appliance placed between 2 network devices
+    Best for packet collection with no data loss
+    Must be placed "in line" of network traffic
+    Not Scalable
+    Will need several installed to capture traffic for other network segments
+
+MitM
+    Attacker can use ARP or some other method/protocol
+    Attackers can sniff or manipulate traffic that flows through them
+    Typically must be on the same network as the victim
+    Traffic capture is dependent on the attacker’s system and bandwidth
+
+SPAN
+    Configured on the network Switch
+    Best for packet collection of traffic from several switch ports at once
+    Scalable
+    Can have a high degree of packet loss
+    Places burden on the network Switch
+
+
+
+Fingerprinting and Host Identification
+    Variances in the RFC implementation for different OS’s and systems enables the capability for fingerprinting
+    Tools used for fingerprinting and host identification can be used passively(sniffing/fingerprinting) or actively(scanning)
+
+Fingerprinting
+    Active OS fingerprinting
+        Easier
+        Send packets to the target and monitor response
+        Tools:
+            Nmap
+            Xprobe2
+            sinfp3
+    Passive OS fingerprinting
+        More difficult
+        Rely on sniffing packets
+        Tools:
+            p0f
+            Ettercap
+            PRADS
+
+
+Open Ports and Protocols
+    Known Windows/Linux ports
+    Known Windows/Linux protocols
+    Banner grab service ports
+
+Known Windows and Linux Ports
+    Windows
+        88 - Kerberos / Domain Controller
+        137/138/139 - NetBIOS
+        445 - SMB
+    Linux
+        22 - SSH
+        111 - SUN RPC
+
+Ephemeral Ports
+    IANA 49152–65535
+    Linux 32768–60999
+    Windows XP 1025–5000
+    Win 7/8/10 use IANA
+    Win Server 2008 1025–60000
+    Sun Solaris 32768–65535
+
+
+Protocol specific identifiers
+    HTTP: User-agent strings
+    SSH: Initial connection
+    NetBIOS Name Service
+
+P0F (Passive OS Fingerprinting)
+    Looks at variations in initial TTL, fragmentation flag, default IP header packet length, window size, and TCP options
+    Configuration stored in:
+             /etc/p0f/p0f.fp
+
+
+What is Baselining?
+    Snapshot of what the network looks like during a time frame
+    No industry standard
+    7 days to establish the initial snapshot
+    Prerequisite Information
+
+Network Baseline Objective
+    Determines the current state of your network
+    Ascertain the current utilization of network resources
+    Identify normal vs peak network traffic time frames
+    Verify port/protocol usage
+
+Perform Baselining
+    Preparation:
+        Network Diagram
+        Known Servers, Hosts, and Networking devices
+        Known IPs, ports, and protocols
+        Known forbidden IPs, ports, and protocols
+        Known traffic "flows"
+    Scope and Objectives:
+        What traffic/protocols to capture?
+        Which network segments?
+        Which days?
+        What times?
+
+
+Determine traffic flow through protocol communication analysis
+Using Wireshark
+    Common Display Filters
+    Protocol Hierarchy
+    Conversations
+    Endpoints
+    I/O Graph
+    IPv4 and IPv6 Statistics
+    Expert Information
+    File Magic Numbers
+    Follow Protocol Streams
+    Apply as Filter options
+
+
+Perform Network Forensics
+Hacker Methodologies
+    Footprinting
+    Network scanning
+    Network Enumeration
+    Vulnerability Assessment
+
+Cyber Kill Chain 
+https://git.cybbh.space/net/public/raw/master/modules/networking/slides-v4/images/KILLCHAIN.png
+Mitre ATT&CK
+Mitre D3FEND
+The Diamond Model
+https://git.cybbh.space/net/public/raw/master/modules/networking/slides-v4/images/diamond.png
+NIST Cyber Security Framework
+https://git.cybbh.space/net/public/raw/master/modules/networking/slides-v4/images/nist.jpeg
+
+
+Indicators:
+Anomaly Detection
+    Indicator of Attack (IOA)
+        Proactive
+        A series of actions that are suspicious together
+        Focus on Intent
+        Looks for what must happen
+            Code execution. persistence, lateral movement, etc.
+    Indicator of Compromise (IOC)
+        Reactive
+        Forensic Evidence
+        Provides Information that can change
+            Malware, IP addresses, exploits, signatures
+    Some Indicators
+        .exe/executable files
+        NOP sled
+        Repeated Letters
+        Well Known Signatures
+        Mismatched Protocols
+        Unusual traffic
+        Large amounts of traffic/ unusual times
+    Signs of IOA
+        Destination IP/Ports
+        Public Servers/DMZs
+        Off-Hours
+        Network Scans
+        Alarm Events
+        Malware Reinfection
+        Remote logins
+        High amounts of some protocols
+    Signs of IOC
+        Unusual traffic outbound
+        Anomalous user login or account use
+        Size of responses for HTML
+        High number of requests for the same files
+        Using non-standard ports/ application-port mismatch
+        Writing changes to the registry/system files
+        Unexpected/unusual patching or tasks
+
+
+Types of Malware
+Adware/Spyware
+    large amounts of traffic/ unusual traffic
+    IOA
+        Destinations
+    IOC
+        Unusual traffic outbound
+Virus
+    phishing/ watering hole
+    IOA
+        Alarm Events, Email protocols
+    IOC
+        Changes to the registry/ system files
+Worm
+    phishing/ watering hole
+    IOA
+        Alarm events
+    IOC
+        changes to registry/ system files
+Trojan
+    beaconing
+    IOA
+        Destinations
+    IOC
+        Unusual traffic outbound, unusual tasks, changes to registry/ system files
+Rootkit
+    IOA
+        Malware reinfection
+    IOC
+        Anomalous user login/ account use
+Backdoor
+    IOA
+        Remote logins
+    IOC
+        Anomalous user login/ account use
+Botnets
+large amounts of IPs
+    IOA
+        Destinations, remote logins
+    IOC
+        Unusual tasks, anomalous user login/ account use
+Polymorphic/Metamorphic Malware
+    Depends on the malware type/class
+Ransomware
+    IOA
+        Destinations, Ports, Malware reinfection
+    IOC
+        Unusual traffic outbound, non-standard ports, unusual tasks
+Mobile Code
+    IOA
+        Depends on the malware type/class
+BIOS/Firmware Malware
+    IOA
+        Malware reinfection
+    IOC
+        Depends on the malware type/class
+        
+
+Determine network anomalies through traffic analysis
+ WireShark
+ ICMP Tunneling
+    ICMP PING uses Type 8 and Type 0
+    Both should be:
+        1 for 1
+        Same size and payload
+    Look out for:
+        Request/Reply imbalances
+        Abnormal/different payloads
+DNS Tunneling
+    DNS uses Query/Response
+        1 Query typically gets 1 response
+    Look out for:
+        Query/Response imbalances
+        Abnormal/different payloads
+        Continuous Queries
+HTTP(s) Tunneling
+    HTTP is "bursty" in nature
+    Client issues request and the server responds
+    Look out for:
+        Steady connections
+        HTTPs you will need to check session establishment for abnormalities
+Beaconing
+    Call back to the C&C server
+    Gets/sends commands from/to C&C
+    Look out for:
+        Beacon Timing
+            Commonly at regular intervals
+        Beacon Size
+            Check-Ins may not have any payloads
+            Orders will have payloads
+
+
+for CTFs WireShark
+- change info to packet bytes? To look for a string inside a packet.
+- filter:' tcp contains "password" '(a filter that will see if a header contains the information provided. It's very powerful). 
+- filter:'!(contains "password")' (looks for results NOT containing password)
+- TACACS+ is an authentication protocol that allows you to log into multiple decides. If you don't know what a protocol does look into it.
+
+
