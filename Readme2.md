@@ -550,7 +550,7 @@ Change your chains to now have a policy of Drop
         sudo nft add rule ip CCTC HOOKIN udp sport { 5050,5150 }  accept
         sudo nft add rule ip CCTC HOOKOUT udp dport { 5050,5150 } accept
         sudo nft add rule ip CCTC HOOKIN udp dport { 5050,5150 }  accept
-        sudo nft add rule ip CCTC HOOKOUT udp dport { 5050,5150 } accept
+        sudo nft add rule ip CCTC HOOKOUT udp sport { 5050,5150 } accept
         
         
         sudo nft add rule ip CCTC HOOKIN tcp sport { 6010,6011,6012 } ct state { new,established } accept
@@ -572,4 +572,5 @@ Allow Pivot and T2 to send ping (ICMP) requests (and reply) to each other .
         
         Show the table and check over it:
         sudo nft list table CCTC
+        sudo nft table CTCC
 
