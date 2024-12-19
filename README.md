@@ -3525,8 +3525,22 @@ T5 float: 10.50.28.46 (inside Ip 192.168.0.10, on /24)
 Rick n Morty Challenge
 
 
+Bender Challenge:
 
+Float: 10.50.20.10
+User: Bender:password 
 
+Tunnel D: ssh Bender@10.50.20.10 -p 1234 -D 9050 -NT
+tunnel 1: ssh Bender@10.50.20.10 -p 1234 -L 11411:172.17.17.28:23 -NT
+      IH: telnet localhost 11411
+          tunnel 2: ssh Bender@172.17.17.17 -p 1234 -R 11422:localhost:4321
+tunnel 3: ssh Bender@10.50.20.10 -p 1234 -L 11433:127.0.0.1:11422 -NT
+tunnel 4: ssh Philip@localhost -p 11433 -L 11444:192.168.30.150:1212 -NT
+tunnel 5: ssh Leela@localhost -p 11444 -L 11455:10.10.12.121:2932 -NT
+Tunnel D (Reestablish): ssh Professor@localhost -p 11455 -D 9050 -NT
+      IH: ssh Professor@localhost -p 11455
+          ss -ntld  (see the random highport that is open)
+      IH: proxychains nc localhost 23456
 
 
 
