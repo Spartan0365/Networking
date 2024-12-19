@@ -481,6 +481,7 @@ cut or wget ( web traffic )
 
 # Record of Flags!:
 Task 1 
+(T1) IPTables
 sudo shutdown -r 5
 sudo shutdown -c 
          These are to initiate a shutdown in 5 mins, and then to cancel the shutdown. 
@@ -511,4 +512,30 @@ Change default policy in the filter table for INPUT, OUTPUT, and FORWARD chains 
          sudo iptables -P INPUT DROP
          sudo iptables -P OUTPUT DROP
          sudo iptables -P FORWARD DROP
-        
+
+(T2) NFtables
+Create The table
+        nft add table ip CCTC
+Create input and output base chains with: Hooks, Priority of 0, Policy as Accept
+         nft add chain HOOKIN { type filter hooks input priority 0 \; policy accept \; }
+         nft add chain HOOKOUT { type filter hooks output priority 0 \; policy accept \; }
+         
+Allow New and Established traffic to/from via SSH, TELNET, and RDP
+        nft add rule ip CCTC HOOKIN tcp sport 22,23,3389
+        nft add rule ip CCTC HOOKIN tcp dport 22,23,3389
+        nft add rule ip CCTC HOOKOUT tcp sport 22,23,3389
+        nft add rule ip CCTC HOOKOUT tcp dport 22,23,3389
+# How do I make this allow NEW and ESTABLISHED traffic?
+
+Change your chains to now have a policy of Drop
+         nft add chain HOOKIN { type filter hooks input priority 0 \; policy drop \; }
+         nft add chain HOOKOUT { type filter hooks output priority 0 \; policy drop \; }
+# Why am I changing these to drop at this point in time?
+
+Allow Pivot and T2 to send ping (ICMP) requests (and reply) to each other .
+        nft add rule ip CCTC HOOKOUT ip daddr 10.10.0.40 icmp type echo-reply accept  
+        nft add rule ip CCTC HOOKOUT ip daddr 10.10.0.40 icmp type echo-request accept  
+        nft add rule ip CCTC HOOKIN ip saddr 10.10.0.40 icmp type echo-reply accept 
+        nft add rule ip CCTC HOOKIN ip saddr 10.10.0.40 icmp type echo-request accept 
+
+
