@@ -500,13 +500,15 @@ Allow New and Established traffic to/from via HTTP
 #        Good?
 
 Allow Pivot and T1 to send ping (ICMP) requests (and reply) to eachother 
+        sudo iptables -I INPUT -s 10.10.0.40 -d 172.16.82.106 -p icmp --icmp-type echo-request -j ACCEPT
+        sudo iptables -I INPUT -s 10.10.0.40 -d 172.16.82.106 -p icmp --icmp-type echo-reply -j ACCEPT
         sudo iptables -I OUTPUT -s 172.16.82.106 -d 10.10.0.40 -p icmp --icmp-type echo-request -j ACCEPT
         sudo iptables -I OUTPUT -s 172.16.82.106 -d 10.10.0.40 -p icmp --icmp-type echo-reply -j ACCEPT
 #        Good!
         
 
 Change default policy in the filter table for INPUT, OUTPUT, and FORWARD chains to DROP.
-        > sudo iptables -P INPUT DROP
-        > sudo iptables -P OUTPUT DROP
-        > sudo iptables -P FORWARD DROP
+         sudo iptables -P INPUT DROP
+         sudo iptables -P OUTPUT DROP
+         sudo iptables -P FORWARD DROP
         
