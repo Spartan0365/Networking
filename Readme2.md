@@ -539,9 +539,12 @@ Change your chains to now have a policy of Drop
 # Why am I changing these to drop at this point in time? DON'T APPLY THIS UNTIL YOU KNOW IT WORKS.
 
 
-        sudo nft add rule ip CCTC HOOKIN tcp sport { 80, 8080 } ct state { new,established } accept 
-        sudo nft add rule ip CCTC HOOKOUT tcp dport { 80, 8080 }ct state { new,established } accept
+        sudo nft add rule ip CCTC HOOKIN tcp sport { 80 } ct state { new,established } accept 
+        sudo nft add rule ip CCTC HOOKOUT tcp dport { 80 }ct state { new,established } accept
 
+        sudo nft add rule ip CCTC HOOKIN tcp dport { 80 } ct state { new,established } accept 
+        sudo nft add rule ip CCTC HOOKOUT tcp sport { 80 }ct state { new,established } accept
+        
         sudo nft add rule ip CCTC HOOKIN tcp sport { 5050,5150 }  accept
         sudo nft add rule ip CCTC HOOKOUT tcp dport { 5050,5150 }  accept
         sudo nft add rule ip CCTC HOOKIN tcp dport { 5050,5150 }  accept
@@ -562,15 +565,13 @@ Change your chains to now have a policy of Drop
 Allow Pivot and T2 to send ping (ICMP) requests (and reply) to each other .
         sudo nft add rule ip CCTC HOOKOUT ip daddr 10.10.0.40 icmp type echo-reply accept  
         sudo nft add rule ip CCTC HOOKOUT ip daddr 10.10.0.40 icmp type echo-request accept  
-        sudo nft add rule ip CCTC HOOKOUT ip saddr 10.10.0.40 icmp type echo-request accept
-        sudo nft add rule ip CCTC HOOKOUT ip saddr 10.10.0.40 icmp type echo-reply accept  
         
         sudo nft add rule ip CCTC HOOKIN ip saddr 10.10.0.40 icmp type echo-reply accept 
         sudo nft add rule ip CCTC HOOKIN ip saddr 10.10.0.40 icmp type echo-request accept 
-        sudo nft add rule ip CCTC HOOKIN ip daddr 10.10.0.40 icmp type echo-reply accept 
-        sudo nft add rule ip CCTC HOOKIN ip daddr 10.10.0.40 icmp type echo-request accept 
         
         Show the table and check over it:
         sudo nft list table CCTC
+        sudo nft flush table CCTC
         sudo nft table CTCC
 
+FLAG: 9f7a33941828bdafd2755fd20176cdf4
