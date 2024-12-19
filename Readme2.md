@@ -433,7 +433,7 @@ Now, you should be able to run terminator.
 > terminator.
 
 sudo iptables -L 
-sudo iptables -A INPUT -p tcp --sport 22 -j ACCEPT
+sudo iptables -A INPUT -p tcp --sport 22 -j DROP
 sudo iptables -A OUTPUT -p tcp --dport 22 -j ACCEPT
 sudo iptables -L --line-numbers
 
@@ -473,5 +473,40 @@ sudo nft add chain ip CCTC INPUT { \; policy drop \; }  ???
 # (maybe do not try using this for your practice; it DID NOT work. Needs to be tweaked.)
 
 
+test if your iptables are working with:
+nc ip fork  
+ping        (icmp traffic)
+cut or wget ( web traffic )
 
 
+# Record of Flags!:
+Task 1 
+sudo shutdown -r 5
+sudo shutdown -c 
+         These are to initiate a shutdown in 5 mins, and then to cancel the shutdown. 
+         Implement host filtering to allow and restrict communications and Traffic.
+         
+Allow New and Established Traffic to/from via SSH, TELNET, and RDP. 
+Allow ports 6579 and 4444 for both udp and tcp traffic both ways.
+Allow New and Established traffic to/from via HTTP
+        sudo iptables -A INPUT -p tcp -m multiport --ports 22,23,80,3389,8080,6579,4444 -m state --state NEW -j ACCEPT
+        sudo iptables -A INPUT -p tcp -m multiport --ports 22,23,80,3389,8080,6579,4444 -m state --state ESTABLISHED -j ACCEPT
+        sudo iptables -A OUTPUT -p tcp -m multiport --ports 22,23,80,3389,8080,6579,4444 -m state --state NEW -j ACCEPT
+        sudo iptables -A OUTPUT -p tcp -m multiport --ports 22,23,80,3389,8080,6579,4444 -m state --state ESTABLISHED -j ACCEPT
+        sudo iptables -A INPUT -p udp -m multiport --ports 22,23,80,3389,8080,6579,4444 -m state --state NEW -j ACCEPT
+        sudo iptables -A INPUT -p udp -m multiport --ports 22,23,80,3389,8080,6579,4444 -m state --state ESTABLISHED -j ACCEPT
+        sudo iptables -A OUTPUT -p udp -m multiport --ports 22,23,80,3389,8080,6579,4444 -m state --state NEW -j ACCEPT
+        sudo iptables -A OUTPUT -p udp -m multiport --ports 22,23,80,3389,8080,6579,4444 -m state --state ESTABLISHED -j ACCEPT
+#        Good?
+
+Allow Pivot and T1 to send ping (ICMP) requests (and reply) to eachother 
+        sudo iptables -I OUTPUT -s 172.16.82.106 -d 10.10.0.40 -p icmp --icmp-type echo-request -j ACCEPT
+        sudo iptables -I OUTPUT -s 172.16.82.106 -d 10.10.0.40 -p icmp --icmp-type echo-reply -j ACCEPT
+#        Good!
+        
+
+Change default policy in the filter table for INPUT, OUTPUT, and FORWARD chains to DROP.
+        > sudo iptables -P INPUT DROP
+        > sudo iptables -P OUTPUT DROP
+        > sudo iptables -P FORWARD DROP
+        
