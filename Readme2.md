@@ -521,10 +521,19 @@ Create input and output base chains with: Hooks, Priority of 0, Policy as Accept
          nft add chain HOOKOUT { type filter hooks output priority 0 \; policy accept \; }
          
 Allow New and Established traffic to/from via SSH, TELNET, and RDP
+Allow New and Established traffic to/from via HTTP
         nft add rule ip CCTC HOOKIN tcp sport 22,23,3389
         nft add rule ip CCTC HOOKIN tcp dport 22,23,3389
         nft add rule ip CCTC HOOKOUT tcp sport 22,23,3389
         nft add rule ip CCTC HOOKOUT tcp dport 22,23,3389
+
+        nft add rule ip CCTC HOOKIN tcp sport 80, 8080
+        nft add rule ip CCTC HOOKOUT tcp dport 80, 8080
+
+        nft add rule ip CCTC HOOKIN tcp sport 5050,5150
+        nft add rule ip CCTC HOOKOUT tcp dport 5050,5150
+        nft add rule ip CCTC HOOKIN udp sport 5050,5150
+        nft add rule ip CCTC HOOKOUT udp dport 5050,5150
 # How do I make this allow NEW and ESTABLISHED traffic?
 
 Change your chains to now have a policy of Drop
