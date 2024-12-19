@@ -515,32 +515,38 @@ Change default policy in the filter table for INPUT, OUTPUT, and FORWARD chains 
 FLAG: 467accfb25050296431008a1357eacb1
 
 (T2) NFtables
-Create The table
-        nft add table ip CCTC
+# Create The table
+         nft add table ip CCTC
 Create input and output base chains with: Hooks, Priority of 0, Policy as Accept
-         nft add chain HOOKIN { type filter hooks input priority 0 \; policy accept \; }
-         nft add chain HOOKOUT { type filter hooks output priority 0 \; policy accept \; }
+         sudo nft add chain CCTC HOOKIN { type filter hook input priority 0 \; policy accept \; }
+         sudo nft add chain CCTC HOOKOUT { type filter hook output priority 0 \; policy accept \; }
          
 Allow New and Established traffic to/from via SSH, TELNET, and RDP
 Allow New and Established traffic to/from via HTTP
-        nft add rule ip CCTC HOOKIN tcp sport { 22,23,3389 } ct state { new,established }
-        nft add rule ip CCTC HOOKIN tcp dport { 22,23,3389 } ct state { new,established }
-        nft add rule ip CCTC HOOKOUT tcp sport { 22,23,3389 } ct state { new,established }
-        nft add rule ip CCTC HOOKOUT tcp dport { 22,23,3389 } ct state { new,established }
-
-        nft add rule ip CCTC HOOKIN tcp sport { 80, 8080 }
-        nft add rule ip CCTC HOOKOUT tcp dport { 80, 8080 }
-
-        nft add rule ip CCTC HOOKIN tcp sport { 5050,5150 } ct state { new,established }
-        nft add rule ip CCTC HOOKOUT tcp dport { 5050,5150 } ct state { new,established }
-        nft add rule ip CCTC HOOKIN udp sport { 5050,5150 } ct state { new,established }
-        nft add rule ip CCTC HOOKOUT udp dport { 5050,5150 } ct state { new,established }
-# How do I make this allow NEW and ESTABLISHED traffic?
-
+        sudo nft add rule ip CCTC HOOKIN tcp sport { 22,23,3389 } ct state { new,established }
+        sudo nft add rule ip CCTC HOOKIN tcp dport { 22,23,3389 } ct state { new,established }
+        sudo nft add rule ip CCTC HOOKOUT tcp sport { 22,23,3389 } ct state { new,established }
+        sudo nft add rule ip CCTC HOOKOUT tcp dport { 22,23,3389 } ct state { new,established }
+        
 Change your chains to now have a policy of Drop
-         nft add chain HOOKIN { type filter hooks input priority 0 \; policy drop \; }
-         nft add chain HOOKOUT { type filter hooks output priority 0 \; policy drop \; }
-# Why am I changing these to drop at this point in time?
+        sudo nft add chain CCTC HOOKIN { type filter hook input priority 0 \; policy drop \; }
+        sudo nft add chain CCTC HOOKOUT { type filter hook output priority 0 \; policy drop \; }
+# Why am I changing these to drop at this point in time? DON'T APPLY THIS UNTIL YOU KNOW IT WORKS.
+
+
+        sudo nft add rule ip CCTC HOOKIN tcp sport { 80, 8080 }
+        sudo nft add rule ip CCTC HOOKOUT tcp dport { 80, 8080 }
+
+        sudo nft add rule ip CCTC HOOKIN tcp sport { 5050,5150 } ct state { new,established }
+        sudo nft add rule ip CCTC HOOKOUT tcp dport { 5050,5150 } ct state { new,established }
+        sudo nft add rule ip CCTC HOOKIN udp sport { 5050,5150 } ct state { new,established }
+        sudo nft add rule ip CCTC HOOKOUT udp dport { 5050,5150 } ct state { new,established }
+
+        sudo nft add rule ip CCTC HOOKIN tcp sport { 6010,6011,6012 } ct state { new,established }
+        sudo nft add rule ip CCTC HOOKOUT tcp sport { 6010,6011,6012 } ct state { new,established }
+
+
+
 
 Allow Pivot and T2 to send ping (ICMP) requests (and reply) to each other .
         nft add rule ip CCTC HOOKOUT ip daddr 10.10.0.40 icmp type echo-reply accept  
