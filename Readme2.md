@@ -325,7 +325,7 @@ There are three chain types:
     tcp flags { syn, ack, psh, rst, fin }
     tcp [ sport | dport { port1 | port1-port2 | port1, port2, port3 } ]
     udp [ sport| dport { port1 | port1-port2 | port1, port2, port3 } ]
-    icmp [ type | code { type# | code# } ]
+    icmp [ type | code { type# | code# } ]  (to block pings, you do NOT block all icmp. you need to block the correct type. Maybe try Googling this to confirm)
     ct state { new, established, related, invalid, untracked }   
     iif [iface]    
     oif [iface]
@@ -363,17 +363,17 @@ To change the current policy
   redirect                    Prerouting output
 
 # Source NAT
-iptables -t nat -A POSTROUTING -o eth0 -s 192.168.0.1 -j SNAT --to 1.1.1.1
+iptables -t nat -A POSTROUTING -o eth0 -s 192.168.0.1 -j SNAT --to 1.1.1.1    (changes the source IP address)
 
-iptables -t nat -A POSTROUTING -p tcp -o eth0 -s 192.168.0.1 -j SNAT --to 1.1.1.1:9001
+iptables -t nat -A POSTROUTING -p tcp -o eth0 -s 192.168.0.1 -j SNAT --to 1.1.1.1:9001     (changes the source IP address and source port)
 
-iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE      (masquerades)
 
 
 
 # Destination NAT
-iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 22 -j DNAT --to 10.0.0.1:22
-iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j DNAT --to 10.0.0.2:80
+iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 22 -j DNAT --to 10.0.0.1:22        (changes destination to 10.0.0.1 and destination port to 22) 
+iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j DNAT --to 10.0.0.2:80        ( 
 iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 443 -j DNAT --to 10.0.0.3:443
 iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 8080
 
@@ -411,8 +411,8 @@ Mangle examples with nftables
 
 
 
-# Notes on creating rules: 
-
+# iptables rules practice!: 
+============================================================
 > which iptables
 > whereis iptables
 installed in sbin. You'll need to sudo.
@@ -455,4 +455,23 @@ sudo iptables -F (flushes all your rules)
 sudo iptables -L (check to see if all the rules are gone)
 sudo iptables-restore < testrules.conf (this will restore all of your rules you saved to testrules.conf)
 sudo iptables -L (confirm)
+
+========================================================
+
+from terminator: 
+sudo nft list rules
+sudo nft add table ip CCTCC
+sudo nft add chain ip CCTCC INPUT { type filter hook input priority 0 \; policy accept \ ;}
+                                            (the ^ hook MUST match the name 'INPUT')
+sudo nft add chain ip CCTC OUTPUT { type filter hook input priority 0 \; policy accept \ ;} 
+
+sudo nft add rule ip CCTC INPUT tcp dport { 21-23, 80 } accept
+sudo nft add rule ip CCTC OUTPUT tcp sport { 21-23, 80 } accept
+sudo nft add rule ip CCTC INPUT tcp dport { 6010-6012 } accept
+sudo nft add rule ip CCTC OUTPUT OUTPUT sport { 6010-6012} accept
+sudo nft add chain ip CCTC INPUT { \; policy drop \; }  ???
+# (maybe do not try using this for your practice; it DID NOT work. Needs to be tweaked.)
+
+
+
 
