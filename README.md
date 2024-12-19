@@ -3519,10 +3519,17 @@ T5 float: 10.50.28.46 (inside Ip 192.168.0.10, on /24)
 
 
 
+Avater Challenge:
+Tunnel 1: ssh Sokka@10.50.20.250 -L 11411:192.168.1.39:22 -NT
+Tunnel 2: ssh Aang@localhost -p 11411 -L 11422:10.0.0.50:22 -NT
+Tunnel 3: ssh Katara@localhost -p 11422 -L 11433:172.16.1.8:22 -NT
+Tunnel D: ssh Toph@localhost -p 11433 -D 9050 -NT
+Ih: ssh Toph@localhost -p 11433
+    ss -ntld
+Ih: proxychains nc localhost 12345
 
 
-
-Rick n Morty Challenge
+Rick n Morty Challenge:
 
 
 Bender Challenge:
