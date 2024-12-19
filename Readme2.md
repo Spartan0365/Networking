@@ -440,3 +440,19 @@ sudo iptables -L --line-numbers
 sudo iptables -I INPUT -s 172.16.82.112 -j DROP
 sudo iptables -I OUTPUT -d 172.16.82.112 -j ACCEPT
 sudo iptables -L 
+(Order matters here. Dropping first and then accepting will create different results than vise versa). 
+
+sudo iptables-sace > testrules.conf 
+ls 
+cat testrules.conf
+
+make sure to check default policies before flushing
+
+sudo iptables -P INPUT ACCEPT
+sudo iptables -L
+
+sudo iptables -F (flushes all your rules)
+sudo iptables -L (check to see if all the rules are gone)
+sudo iptables-restore < testrules.conf (this will restore all of your rules you saved to testrules.conf)
+sudo iptables -L (confirm)
+
