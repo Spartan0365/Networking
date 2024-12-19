@@ -512,6 +512,7 @@ Change default policy in the filter table for INPUT, OUTPUT, and FORWARD chains 
          sudo iptables -P INPUT DROP
          sudo iptables -P OUTPUT DROP
          sudo iptables -P FORWARD DROP
+FLAG: 467accfb25050296431008a1357eacb1
 
 (T2) NFtables
 Create The table
@@ -522,18 +523,18 @@ Create input and output base chains with: Hooks, Priority of 0, Policy as Accept
          
 Allow New and Established traffic to/from via SSH, TELNET, and RDP
 Allow New and Established traffic to/from via HTTP
-        nft add rule ip CCTC HOOKIN tcp sport 22,23,3389
-        nft add rule ip CCTC HOOKIN tcp dport 22,23,3389
-        nft add rule ip CCTC HOOKOUT tcp sport 22,23,3389
-        nft add rule ip CCTC HOOKOUT tcp dport 22,23,3389
+        nft add rule ip CCTC HOOKIN tcp sport { 22,23,3389 }
+        nft add rule ip CCTC HOOKIN tcp dport { 22,23,3389 }
+        nft add rule ip CCTC HOOKOUT tcp sport { 22,23,3389 }
+        nft add rule ip CCTC HOOKOUT tcp dport { 22,23,3389 }
 
-        nft add rule ip CCTC HOOKIN tcp sport 80, 8080
-        nft add rule ip CCTC HOOKOUT tcp dport 80, 8080
+        nft add rule ip CCTC HOOKIN tcp sport { 80, 8080 }
+        nft add rule ip CCTC HOOKOUT tcp dport { 80, 8080 }
 
-        nft add rule ip CCTC HOOKIN tcp sport 5050,5150
-        nft add rule ip CCTC HOOKOUT tcp dport 5050,5150
-        nft add rule ip CCTC HOOKIN udp sport 5050,5150
-        nft add rule ip CCTC HOOKOUT udp dport 5050,5150
+        nft add rule ip CCTC HOOKIN tcp sport { 5050,5150 }
+        nft add rule ip CCTC HOOKOUT tcp dport { 5050,5150 }
+        nft add rule ip CCTC HOOKIN udp sport { 5050,5150 }
+        nft add rule ip CCTC HOOKOUT udp dport { 5050,5150 }
 # How do I make this allow NEW and ESTABLISHED traffic?
 
 Change your chains to now have a policy of Drop
