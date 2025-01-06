@@ -3912,3 +3912,18 @@ IH: ssh cheryl@localhost -p 11433 -L 11455:localhost:11444 -NT
 IH: ssh malory@localhost -p 11455 -D 9050 -NT
 IH: proxy chains (etc...)
 
+OR
+
+(this is used in the instance the boxes you're ssh'ing through don't have telnet)
+IH: ssh sterling@float -L 11499:10.1.2.200:23 -NT
+IH: telnet localhost 11499
+Lana: ssh sterling@10.1.2.130 -R 114211:localhost:8976 -NT
+IH: ssh sterling@float -L 11422:localhost:11411 -NT
+IH: ssh lana@localhost -p 11422 -L 11433:10.2.5.20:22 -NT 
+IH: ssh Cheryl@localhost -p 11433 -L 11498:10.3.9.39:23 -NT
+IH: telnet localhost 11498
+Malory: ssh Cheryl@10.3.9.33 -L 11444:localhost:3597
+IH: ssh Cheryl@localhost -p 11433 -L 11455:10.3.9.39:11444
+IH: ssh Malory@localhost -p 11455 -D 9050 -NT
+
+
