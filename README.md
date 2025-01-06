@@ -3852,3 +3852,43 @@ for CTFs WireShark
 - TACACS+ is an authentication protocol that allows you to log into multiple decides. If you don't know what a protocol does look into it.
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Traffic Filtering
+=================
+====  Day 7 =====
+=================
+
+
+
+
+
+South Park Tunnel
+
+from BIH:
+
+telnet Eric's_IP
+Eric: ssh student@10.50.30.41 -R 11411:localhost:8462 (tunnel 1)
+IH: ssh Eric@localhost -p 11411 -L 11422:192.168.100.60:22 -NT (tunnel 2)
+IH: ssh Kenny@localhost -p 11422 -L 11433:10.90.50.140:6481 -NT (tunnel 3)
+IH: ssh Kyle@localhost -p 11433
+Kyle: telnet 172.20.21.5 
+Stan: ssh Kyle@172.20.21.4 -R 11444:localhost:22 -NT
+IH: ssh Kyle@localhost -p 11433 -L 11455:localhost:11444 (this should connect to Stan)
+IH: ssh Stan@localhost -p 11455 -D 9050 -NT  (place our tools there on Stan)
+IH: ssh Stan@localhost -p 11455  
+    Stan: (you can now work in Stan)
+
+
