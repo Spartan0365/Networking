@@ -3875,6 +3875,9 @@ Traffic Filtering
 
 
 
+
+
+
 South Park Tunnel
 
 from BIH:
@@ -3891,4 +3894,21 @@ IH: ssh Stan@localhost -p 11455 -D 9050 -NT  (place our tools there on Stan)
 IH: ssh Stan@localhost -p 11455  
     Stan: (you can now work in Stan)
 
+
+
+from Archer:
+
+IH: ssh Sterling@float
+
+Sterling: telnet 10.12.128.200
+Lana: ssh Sterling@localhost -R 11411:localhost:8976 (tunnel 2)
+
+IH: ssh Sterling@float -L 11422:localhost:11411 -NT
+IH: ssh Lana@localhost -p 11422 -L 11433:10.2.5.20:22 -NT
+IH: ssh Cheryl@localhost -p 11433
+Cheryl: telnet 10.3.9.39
+Malory: ssh Cheryl@10.3.9.33 -R 11444:localhost:3597 -NT
+IH: ssh cheryl@localhost -p 11433 -L 11455:localhost:11444 -NT
+IH: ssh malory@localhost -p 11455 -D 9050 -NT
+IH: proxy chains (etc...)
 
