@@ -1,0 +1,22 @@
+This field has so much information that it's not practical to memorize it. 
+Therefor, work on resource management. Know where to find information you need.
+Try to understand it by practicing. There's a lot of information you can get reps on so that you don't
+need to remember it; you just know it. 
+
+Things to remember:
+Tunneling (and how to call alternate ports)
+Berkeley Packet Filtering (or BCP, idk what the 'C' is)
+File Transter & Redirection: FTP, SCP, Netcat. 
+    If you can SCP into a box, you can use SCP. 
+    If it is an HTTP or FTP server, you can use wget. If it has FTP and doesn't work, it may not support anonymous login (see if we have credentials that work in this box! if so, that may be a work around. Try using
+    Wireshark or TCPdump to try to get the creds you need).
+Snort (IDS/IPs):
+Key to success with snort is to look for a pattern and then match it to provide alerts whenever the pattern occurs. 
+
+Useful Linux Commands: 
+GREP -  
+AWK -
+SORT -
+CUT -
+UNIQ -
+                                                                                                                          
