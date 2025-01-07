@@ -1,0 +1,10 @@
+Use terminator to so you can open up the number of windows you need. 
+There are three different floats: easy, medium, hard. 
+You will find the questions here. There won't be any questions on the exam.
+example: if you see suspicious ports, open them up the way you did in class and logged during your notes. 
+wget for http for ftp, netcat for banner grabs, etc. Once you get the answer, you're done. 
+Once you get on the device, you will add a salt to your answer (just a string) and combine it with your answer to get your points. 
+Expect to do an md5sum to generate the flag. 
+It's a two part exam. Half in the morning, Half after lunch. 
+
+Use: PERSONAL NOTE. Make your github public to access your notes!
