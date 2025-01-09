@@ -1682,6 +1682,128 @@ Access Controls - Network Complete
 Check intel on the CTF server for new information regarding mission tasks
 
 
+=================================
+==== Access Controls - Hosts ====
+=================================
+
+from terminator: 
+sudo nft list rules
+sudo nft add table ip CCTCC
+sudo nft add chain ip CCTCC INPUT { type filter hook input priority 0 \; policy accept \ ;}
+                                            (the ^ hook MUST match the name 'INPUT')
+sudo nft add chain ip CCTC OUTPUT { type filter hook input priority 0 \; policy accept \ ;} 
+
+sudo nft add rule ip CCTC INPUT tcp dport { 21-23, 80 } accept
+sudo nft add rule ip CCTC OUTPUT tcp sport { 21-23, 80 } accept
+sudo nft add rule ip CCTC INPUT tcp dport { 6010-6012 } accept
+sudo nft add rule ip CCTC OUTPUT OUTPUT sport { 6010-6012} accept
+sudo nft add chain ip CCTC INPUT { \; policy drop \; }  ???
+# (maybe do not try using this for your practice; it DID NOT work. Needs to be tweaked.)
+
+
+test if your iptables are working with:
+nc ip fork  
+ping        (icmp traffic)
+cut or wget ( web traffic )
+
+
+# Record of Flags!:
+Task 1 
+(T1) IPTables
+sudo shutdown -r 5
+sudo shutdown -c 
+         These are to initiate a shutdown in 5 mins, and then to cancel the shutdown. 
+         Implement host filtering to allow and restrict communications and Traffic.
+         
+Allow New and Established Traffic to/from via SSH, TELNET, and RDP. 
+Allow ports 6579 and 4444 for both udp and tcp traffic both ways.
+Allow New and Established traffic to/from via HTTP
+        sudo iptables -A INPUT -p tcp -m multiport --ports 22,23,80,3389,8080,6579,4444 -m state --state NEW -j ACCEPT
+        sudo iptables -A INPUT -p tcp -m multiport --ports 22,23,80,3389,8080,6579,4444 -m state --state ESTABLISHED -j ACCEPT
+        sudo iptables -A OUTPUT -p tcp -m multiport --ports 22,23,80,3389,8080,6579,4444 -m state --state NEW -j ACCEPT
+        sudo iptables -A OUTPUT -p tcp -m multiport --ports 22,23,80,3389,8080,6579,4444 -m state --state ESTABLISHED -j ACCEPT
+        sudo iptables -A INPUT -p udp -m multiport --ports 22,23,80,3389,8080,6579,4444 -m state --state NEW -j ACCEPT
+        sudo iptables -A INPUT -p udp -m multiport --ports 22,23,80,3389,8080,6579,4444 -m state --state ESTABLISHED -j ACCEPT
+        sudo iptables -A OUTPUT -p udp -m multiport --ports 22,23,80,3389,8080,6579,4444 -m state --state NEW -j ACCEPT
+        sudo iptables -A OUTPUT -p udp -m multiport --ports 22,23,80,3389,8080,6579,4444 -m state --state ESTABLISHED -j ACCEPT
+#        Good?
+
+Allow Pivot and T1 to send ping (ICMP) requests (and reply) to eachother 
+        sudo iptables -I INPUT -s 10.10.0.40 -d 172.16.82.106 -p icmp --icmp-type echo-request -j ACCEPT
+        sudo iptables -I INPUT -s 10.10.0.40 -d 172.16.82.106 -p icmp --icmp-type echo-reply -j ACCEPT
+        sudo iptables -I OUTPUT -s 172.16.82.106 -d 10.10.0.40 -p icmp --icmp-type echo-request -j ACCEPT
+        sudo iptables -I OUTPUT -s 172.16.82.106 -d 10.10.0.40 -p icmp --icmp-type echo-reply -j ACCEPT
+#        Good!
+        
+
+Change default policy in the filter table for INPUT, OUTPUT, and FORWARD chains to DROP.
+         sudo iptables -P INPUT DROP
+         sudo iptables -P OUTPUT DROP
+         sudo iptables -P FORWARD DROP
+FLAG: 467accfb25050296431008a1357eacb1
+
+(T2) NFtables
+from 172.16.82.112 (ssh through 10.50.30.41)
+# Create The table
+         sudo nft add table ip CCTC
+Create input and output base chains with: Hooks, Priority of 0, Policy as Accept
+         sudo nft add chain CCTC HOOKIN { type filter hook input priority 0 \; policy accept \; }
+         sudo nft add chain CCTC HOOKOUT { type filter hook output priority 0 \; policy accept \; }
+         
+Allow New and Established traffic to/from via SSH, TELNET, and RDP
+Allow New and Established traffic to/from via HTTP
+        sudo nft add rule ip CCTC HOOKIN tcp sport { 22,23,3389 } ct state { new,established } accept
+        sudo nft add rule ip CCTC HOOKIN tcp dport { 22,23,3389 } ct state { new,established } accept
+        sudo nft add rule ip CCTC HOOKOUT tcp sport { 22,23,3389 } ct state { new,established } accept
+        sudo nft add rule ip CCTC HOOKOUT tcp dport { 22,23,3389 } ct state { new,established } accept
+        
+Change your chains to now have a policy of Drop
+        sudo nft add chain CCTC HOOKIN { \; policy drop \; }
+        sudo nft add chain CCTC HOOKOUT { \; policy drop \; }
+
+        alternate:
+        sudo nft add chain CCTC HOOKIN { \; policy accept \; }
+        sudo nft add chain CCTC HOOKOUT { \; policy accept \; }
+# Why am I changing these to drop at this point in time? DON'T APPLY THIS UNTIL YOU KNOW IT WORKS.
+
+
+        sudo nft add rule ip CCTC HOOKIN tcp sport { 80 } ct state { new,established } accept 
+        sudo nft add rule ip CCTC HOOKOUT tcp dport { 80 }ct state { new,established } accept
+
+        sudo nft add rule ip CCTC HOOKIN tcp dport { 80 } ct state { new,established } accept 
+        sudo nft add rule ip CCTC HOOKOUT tcp sport { 80 }ct state { new,established } accept
+        
+        sudo nft add rule ip CCTC HOOKIN tcp sport { 5050,5150 }  accept
+        sudo nft add rule ip CCTC HOOKOUT tcp dport { 5050,5150 }  accept
+        sudo nft add rule ip CCTC HOOKIN tcp dport { 5050,5150 }  accept
+        sudo nft add rule ip CCTC HOOKOUT tcp sport { 5050,5150 } accept
+        
+        sudo nft add rule ip CCTC HOOKIN udp sport { 5050,5150 }  accept
+        sudo nft add rule ip CCTC HOOKOUT udp dport { 5050,5150 } accept
+        sudo nft add rule ip CCTC HOOKIN udp dport { 5050,5150 }  accept
+        sudo nft add rule ip CCTC HOOKOUT udp sport { 5050,5150 } accept
+        
+        
+        sudo nft add rule ip CCTC HOOKIN tcp sport { 6010,6011,6012 } ct state { new,established } accept
+        sudo nft add rule ip CCTC HOOKOUT tcp sport { 6010,6011,6012 } ct state { new,established } accept
+
+
+
+
+Allow Pivot and T2 to send ping (ICMP) requests (and reply) to each other .
+        sudo nft add rule ip CCTC HOOKOUT ip daddr 10.10.0.40 icmp type echo-reply accept  
+        sudo nft add rule ip CCTC HOOKOUT ip daddr 10.10.0.40 icmp type echo-request accept  
+        
+        sudo nft add rule ip CCTC HOOKIN ip saddr 10.10.0.40 icmp type echo-reply accept 
+        sudo nft add rule ip CCTC HOOKIN ip saddr 10.10.0.40 icmp type echo-request accept 
+        
+        Show the table and check over it:
+        sudo nft list table CCTC
+        sudo nft flush table CCTC
+        sudo nft table CTCC
+
+FLAG: 9f7a33941828bdafd2755fd20176cdf4
+
 # Additional Final Notes:
 Use terminator to so you can open up the number of windows you need. 
 There are three different floats: easy, medium, hard. 
