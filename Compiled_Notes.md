@@ -1681,3 +1681,24 @@ Strengthening Defensive Systems
 Access Controls - Network Complete
 Check intel on the CTF server for new information regarding mission tasks
 
+
+# Additional Final Notes:
+Use terminator to so you can open up the number of windows you need. 
+There are three different floats: easy, medium, hard. 
+You will find the questions here. There won't be any questions on the exam.
+example: if you see suspicious ports, open them up the way you did in class and logged during your notes. 
+wget for http for ftp, netcat for banner grabs, etc. Once you get the answer, you're done. 
+Once you get on the device, you will add a salt to your answer (just a string) and combine it with your answer to get your points. 
+Expect to do an md5sum to generate the flag. 
+It's a two part exam. Half in the morning, Half after lunch. 
+
+Use: PERSONAL NOTE. Make your github public to access your notes!
+Expect trick questions, so ask for explanations. You can ask for help with formatting. 
+echo "ANSWER Server-SALT" | md5sum (this will get you your answer). 
+
+The password provided in the exam will only work on the easy track. There will be other passwords that you have to find. 
+We will be provided with the resources/scripts needed for the exam. 
+You are only required 100 or 300 points (but some points have more weight than others). 
+Easy track will get you 75 points.
+Medium Track will get you 110 points. 
+hard track will get you 150 points. 
