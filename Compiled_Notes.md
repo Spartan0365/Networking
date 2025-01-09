@@ -1236,7 +1236,15 @@ Ih: proxychains nc localhost 12345
 
 
 # Rick n Morty Challenge:
-
+telnet 10.50.24.223 (rick)
+  tunnel 1: ssh student@10.50.30.41 -R 11411:localhost:22 -NT
+  tunnel 2: ssh Rick@localhost -p 11411 -L 11422:10.2.1.18:2222 -NT
+  tunnel 3: ssh Morty@localhost -p 11422 -L 11433:172.16.10.121:2323 -NT
+  tunnel 4: ssh Jerry@localhost -p 11433 -L 11444:192.168.10.69:22 -NT
+  tunnel 5: ssh Beth@localhost -p 11444 -D 9050 -NT (dynamic forwarder to bring our tools over)
+        IH: proxychains nc localhost 54321
+            echo 'Life is effort and I'll stop when I die!' | md5sum
+            (this is your answer).
 
 # Bender Challenge:
 
